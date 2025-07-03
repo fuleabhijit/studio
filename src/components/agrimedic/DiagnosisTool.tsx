@@ -3,13 +3,14 @@
 
 import { useState, useRef, type ChangeEvent } from 'react';
 import Image from 'next/image';
-import { UploadCloud, LoaderCircle, AlertTriangle, Bot, Stethoscope, Pill, Sparkles } from 'lucide-react';
+import { UploadCloud, LoaderCircle, AlertTriangle, Bot, Stethoscope, Pill, Sparkles, ExternalLink } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { useGeolocation } from '@/hooks/useGeolocation';
 import { getDiagnosis } from '@/lib/actions';
 import type { AnalyzeCropImageOutput } from '@/ai/flows/analyze-crop-image';
@@ -115,17 +116,42 @@ export default function DiagnosisTool() {
       <Card className="bg-card shadow-lg border-accent/20">
         <CardHeader className="flex flex-row items-center gap-4">
           <Sparkles className="w-8 h-8 text-accent" />
-          <CardTitle className="font-headline text-2xl">Remedy Suggestions</CardTitle>
+          <CardTitle className="font-headline text-2xl">Remedy Recommendations</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div>
-            <h3 className="font-semibold text-lg flex items-center gap-2"><Pill className="w-5 h-5"/>Affordable Remedies</h3>
-            <p className="text-muted-foreground whitespace-pre-wrap">{result?.remedySuggestions.affordableRemedies || 'No specific remedies suggested.'}</p>
-          </div>
-          <div>
-            <h3 className="font-semibold text-lg">Notes</h3>
-            <p className="text-muted-foreground whitespace-pre-wrap">{result?.remedySuggestions.notes || 'No additional notes.'}</p>
-          </div>
+           {result?.remedySuggestions && result.remedySuggestions.length > 0 ? (
+            <Accordion type="single" collapsible className="w-full">
+              {result.remedySuggestions.map((remedy, index) => (
+                <AccordionItem value={`item-${index}`} key={index}>
+                  <AccordionTrigger>
+                    <div className="flex items-center gap-4">
+                      <Pill className="w-5 h-5 text-primary" />
+                      <span className="font-semibold text-lg">{remedy.name}</span>
+                      <Badge variant="outline">{remedy.type}</Badge>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="pl-10 space-y-4">
+                    <p className="text-muted-foreground">{remedy.description}</p>
+                    <Button asChild>
+                      <a href={remedy.buyLink} target="_blank" rel="noopener noreferrer">
+                        Buy Now
+                        <ExternalLink className="ml-2 h-4 w-4" />
+                      </a>
+                    </Button>
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          ) : (
+            <p className="text-muted-foreground">No specific remedies suggested.</p>
+          )}
+
+          {result?.notes && (
+            <div className="pt-4 border-t mt-4">
+              <h3 className="font-semibold text-lg">Additional Notes</h3>
+              <p className="text-muted-foreground whitespace-pre-wrap">{result.notes}</p>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

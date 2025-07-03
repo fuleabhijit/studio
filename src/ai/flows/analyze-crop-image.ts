@@ -27,12 +27,13 @@ const AnalyzeCropImageOutputSchema = z.object({
     diseaseName: z.string().describe('The name of the identified disease.'),
     pestName: z.string().describe('The name of the identified pest.'),
   }),
-  remedySuggestions: z.object({
-    affordableRemedies: z
-      .string()
-      .describe('Affordable and locally available remedies for the disease.'),
-    notes: z.string().describe('Other notes or considerations.'),
-  }),
+  remedySuggestions: z.array(z.object({
+    name: z.string().describe('Name of the medicine or pesticide.'),
+    type: z.string().describe('Type of remedy, e.g., Pesticide, Fungicide, Organic.'),
+    description: z.string().describe('Description of how to use the remedy.'),
+    buyLink: z.string().url().describe('A Google search URL to find and purchase the product. The URL should be in the format "https://www.google.com/search?q=buy+<product_name>".')
+  })).describe('A list of recommended medicines or pesticides.'),
+  notes: z.string().optional().describe('Other general notes or considerations.'),
 });
 export type AnalyzeCropImageOutput = z.infer<typeof AnalyzeCropImageOutputSchema>;
 
@@ -48,6 +49,14 @@ const analyzeCropImagePrompt = ai.definePrompt({
 
 You will analyze the provided image of the plant and identify any potential diseases or pests affecting it.
 Based on the identified issue, you will suggest affordable and locally available remedies, taking into account the provided geolocation if available.
+
+For each remedy, provide the following details:
+- name: The product name of the medicine or pesticide.
+- type: The type of remedy (e.g., Pesticide, Fungicide, Organic).
+- description: A brief description of the remedy and how to apply it.
+- buyLink: A Google search URL to find and purchase the product. For example: "https://www.google.com/search?q=buy+<product_name>".
+
+Also, provide any other general notes or considerations.
 
 Consider the cost and availability of the remedies in your suggestions.
 
