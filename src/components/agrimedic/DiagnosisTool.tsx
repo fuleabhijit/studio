@@ -1,16 +1,14 @@
-
 "use client";
 
 import { useState, useRef, type ChangeEvent } from 'react';
 import Image from 'next/image';
-import { UploadCloud, LoaderCircle, AlertTriangle, Bot, Stethoscope, Pill, Sparkles, ExternalLink } from 'lucide-react';
+import { UploadCloud, LoaderCircle, AlertTriangle, Bot, Stethoscope, Sparkles } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { useGeolocation } from '@/hooks/useGeolocation';
 import { getDiagnosis } from '@/lib/actions';
 import type { AnalyzeCropImageOutput } from '@/ai/flows/analyze-crop-image';
@@ -120,28 +118,11 @@ export default function DiagnosisTool() {
         </CardHeader>
         <CardContent className="space-y-4">
            {result?.remedySuggestions && result.remedySuggestions.length > 0 ? (
-            <Accordion type="single" collapsible className="w-full">
+            <ul className="list-disc pl-5 space-y-2">
               {result.remedySuggestions.map((remedy, index) => (
-                <AccordionItem value={`item-${index}`} key={index}>
-                  <AccordionTrigger>
-                    <div className="flex items-center gap-4">
-                      <Pill className="w-5 h-5 text-primary" />
-                      <span className="font-semibold text-lg">{remedy.name}</span>
-                      <Badge variant="outline">{remedy.type}</Badge>
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent className="pl-10 space-y-4">
-                    <p className="text-muted-foreground">{remedy.description}</p>
-                    <Button asChild>
-                      <a href={remedy.buyLink} target="_blank" rel="noopener noreferrer">
-                        Buy Now
-                        <ExternalLink className="ml-2 h-4 w-4" />
-                      </a>
-                    </Button>
-                  </AccordionContent>
-                </AccordionItem>
+                <li key={index} className="text-muted-foreground">{remedy}</li>
               ))}
-            </Accordion>
+            </ul>
           ) : (
             <p className="text-muted-foreground">No specific remedies suggested.</p>
           )}
