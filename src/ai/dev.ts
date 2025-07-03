@@ -3,3 +3,4 @@ config();
 
 import '@/ai/flows/analyze-crop-image.ts';
 import '@/ai/flows/suggest-treatment-options.ts';
+import '@/ai/flows/translate-text.ts';

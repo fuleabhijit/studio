@@ -1,12 +1,45 @@
 
-import { Leaf } from 'lucide-react';
+"use client";
+
+import { Leaf, Globe } from 'lucide-react';
+import { useLanguage } from '@/context/LanguageContext';
+import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 export default function Header() {
+  const { t, setLanguage, language } = useLanguage();
+
   return (
     <header className="bg-primary text-primary-foreground shadow-lg">
-      <div className="container mx-auto px-4 py-4 flex items-center">
-        <Leaf className="h-8 w-8 mr-3 text-primary-foreground" />
-        <h1 className="text-2xl lg:text-3xl font-bold font-headline">AgriMedic AI</h1>
+      <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+        <div className="flex items-center">
+          <Leaf className="h-8 w-8 mr-3 text-primary-foreground" />
+          <h1 className="text-2xl lg:text-3xl font-bold font-headline">{t('appTitle')}</h1>
+        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon">
+              <Globe className="h-6 w-6" />
+              <span className="sr-only">{t('language')}</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => setLanguage('en')} disabled={language === 'en'}>
+              {t('english')}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setLanguage('hi')} disabled={language === 'hi'}>
+              {t('hindi')}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setLanguage('mr')} disabled={language === 'mr'}>
+              {t('marathi')}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </header>
   );

@@ -1,8 +1,11 @@
+
 "use client";
 
 import * as React from 'react';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function Footer() {
+  const { t } = useLanguage();
   const [year, setYear] = React.useState(new Date().getFullYear());
   
   React.useEffect(() => {
@@ -12,8 +15,8 @@ export default function Footer() {
   return (
     <footer className="bg-secondary text-secondary-foreground py-6 mt-auto">
       <div className="container mx-auto px-4 text-center">
-        <p className="text-sm">&copy; {year} AgriMedic AI. All rights reserved.</p>
-        <p className="text-xs mt-1">Empowering farmers with AI technology.</p>
+        <p className="text-sm">{t('footerCopyright').replace('{year}', year.toString())}</p>
+        <p className="text-xs mt-1">{t('footerTagline')}</p>
       </div>
     </footer>
   );

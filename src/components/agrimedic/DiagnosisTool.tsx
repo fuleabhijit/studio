@@ -1,6 +1,7 @@
+
 "use client";
 
-import { useState, useRef, type ChangeEvent } from 'react';
+import { useState, useRef, type ChangeEvent, useEffect } from 'react';
 import Image from 'next/image';
 import { UploadCloud, LoaderCircle, AlertTriangle, Bot, Stethoscope, Sparkles } from 'lucide-react';
 
@@ -10,9 +11,10 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useGeolocation } from '@/hooks/useGeolocation';
-import { getDiagnosis } from '@/lib/actions';
+import { getDiagnosis, getTranslatedDiagnosis } from '@/lib/actions';
 import type { AnalyzeCropImageOutput } from '@/ai/flows/analyze-crop-image';
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function DiagnosisTool() {
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -23,6 +25,13 @@ export default function DiagnosisTool() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const location = useGeolocation();
   const { toast } = useToast();
+  const { t, language } = useLanguage();
+
+  useEffect(() => {
+    // When language changes, clear the result as it might be in the wrong language
+    setResult(null);
+  }, [language]);
+
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -40,7 +49,7 @@ export default function DiagnosisTool() {
 
   const handleDiagnose = async () => {
     if (!imageFile) {
-      setError("Please select an image first.");
+      setError(t("selectImageError"));
       return;
     }
 
@@ -56,8 +65,8 @@ export default function DiagnosisTool() {
         if (location.error) {
             toast({
                 variant: 'destructive',
-                title: 'Geolocation Error',
-                description: "Could not get your location. Diagnosis will not be location-specific.",
+                title: t('geolocationErrorTitle'),
+                description: t('geolocationErrorDescription'),
             });
         }
         
@@ -65,17 +74,31 @@ export default function DiagnosisTool() {
           ? `lat: ${location.latitude}, lon: ${location.longitude}`
           : undefined;
 
-        const response = await getDiagnosis({ photoDataUri, geolocation: geolocationString });
+        const diagnosisResponse = await getDiagnosis({ photoDataUri, geolocation: geolocationString });
 
-        if (response.error) {
-            setError(response.error);
-        } else if (response.data) {
-            setResult(response.data);
+        if (diagnosisResponse.error) {
+            setError(diagnosisResponse.error);
+            setIsLoading(false);
+        } else if (diagnosisResponse.data) {
+            if (language === 'en') {
+                setResult(diagnosisResponse.data);
+                setIsLoading(false);
+            } else {
+                const translationResponse = await getTranslatedDiagnosis({ diagnosis: diagnosisResponse.data, targetLanguage: language });
+                if (translationResponse.error) {
+                    setError(t('unexpectedError'));
+                    setResult(diagnosisResponse.data);
+                } else {
+                    setResult(translationResponse.data);
+                }
+                setIsLoading(false);
+            }
+        } else {
+            setIsLoading(false);
         }
-        setIsLoading(false);
     }
     reader.onerror = () => {
-        setError('Failed to read the image file.');
+        setError(t('readImageError'));
         setIsLoading(false);
     };
   };
@@ -87,25 +110,25 @@ export default function DiagnosisTool() {
       <Card className="bg-card shadow-lg border-primary/20">
         <CardHeader className="flex flex-row items-center gap-4">
           <Stethoscope className="w-8 h-8 text-primary" />
-          <CardTitle className="font-headline text-2xl">Diagnosis</CardTitle>
+          <CardTitle className="font-headline text-2xl">{t('diagnosisTitle')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {result?.diseaseIdentification.diseaseDetected ? (
             <>
               <div>
-                <h3 className="font-semibold text-lg">Disease Identified</h3>
-                <p className="text-muted-foreground">{result.diseaseIdentification.diseaseName || 'N/A'}</p>
+                <h3 className="font-semibold text-lg">{t('diseaseIdentifiedLabel')}</h3>
+                <p className="text-muted-foreground">{result.diseaseIdentification.diseaseName || t('notApplicable')}</p>
               </div>
               <div>
-                <h3 className="font-semibold text-lg">Pest Identified</h3>
-                <p className="text-muted-foreground">{result.diseaseIdentification.pestName || 'N/A'}</p>
+                <h3 className="font-semibold text-lg">{t('pestIdentifiedLabel')}</h3>
+                <p className="text-muted-foreground">{result.diseaseIdentification.pestName || t('notApplicable')}</p>
               </div>
-              <Badge variant="destructive">Disease Detected</Badge>
+              <Badge variant="destructive">{t('diseaseDetectedBadge')}</Badge>
             </>
           ) : (
              <>
-              <p className="text-lg">No disease or pest was confidently identified from the image.</p>
-              <Badge variant="secondary">No Disease Detected</Badge>
+              <p className="text-lg">{t('noDiseaseDetectedMessage')}</p>
+              <Badge variant="secondary">{t('noDiseaseDetectedBadge')}</Badge>
              </>
           )}
         </CardContent>
@@ -114,7 +137,7 @@ export default function DiagnosisTool() {
       <Card className="bg-card shadow-lg border-accent/20">
         <CardHeader className="flex flex-row items-center gap-4">
           <Sparkles className="w-8 h-8 text-accent" />
-          <CardTitle className="font-headline text-2xl">Remedy Recommendations</CardTitle>
+          <CardTitle className="font-headline text-2xl">{t('remedyRecommendationsTitle')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
            {result?.remedySuggestions && result.remedySuggestions.length > 0 ? (
@@ -124,12 +147,12 @@ export default function DiagnosisTool() {
               ))}
             </ul>
           ) : (
-            <p className="text-muted-foreground">No specific remedies suggested.</p>
+            <p className="text-muted-foreground">{t('noRemediesSuggested')}</p>
           )}
 
           {result?.notes && (
             <div className="pt-4 border-t mt-4">
-              <h3 className="font-semibold text-lg">Additional Notes</h3>
+              <h3 className="font-semibold text-lg">{t('additionalNotesTitle')}</h3>
               <p className="text-muted-foreground whitespace-pre-wrap">{result.notes}</p>
             </div>
           )}
@@ -165,9 +188,9 @@ export default function DiagnosisTool() {
   const renderPlaceholder = () => (
       <div className="flex flex-col items-center justify-center text-center p-8 border-2 border-dashed border-border rounded-lg h-full">
           <Bot size={64} className="text-muted-foreground mb-4" />
-          <h2 className="text-2xl font-bold font-headline mb-2">AI Diagnosis Awaits</h2>
+          <h2 className="text-2xl font-bold font-headline mb-2">{t('placeholderTitle')}</h2>
           <p className="text-muted-foreground max-w-sm">
-            Your plant's diagnosis and treatment suggestions will appear here once you upload a photo and start the analysis.
+            {t('placeholderDescription')}
           </p>
       </div>
   );
@@ -177,7 +200,7 @@ export default function DiagnosisTool() {
       <div className="space-y-6">
         <Card className="shadow-lg">
           <CardHeader>
-            <CardTitle className="font-headline text-2xl">Upload Plant Photo</CardTitle>
+            <CardTitle className="font-headline text-2xl">{t('uploadTitle')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div
@@ -192,7 +215,7 @@ export default function DiagnosisTool() {
             >
               <UploadCloud className="mx-auto h-12 w-12 text-muted-foreground" />
               <p className="mt-4 text-muted-foreground">
-                Click to upload or drag and drop an image
+                {t('uploadPrompt')}
               </p>
               <input
                 type="file"
@@ -222,7 +245,7 @@ export default function DiagnosisTool() {
               size="lg"
             >
               {isLoading && <LoaderCircle className="mr-2 h-5 w-5 animate-spin" />}
-              {isLoading ? 'Diagnosing...' : 'Diagnose Plant'}
+              {isLoading ? t('diagnosingButton') : t('diagnoseButton')}
             </Button>
           </CardContent>
         </Card>
@@ -231,7 +254,7 @@ export default function DiagnosisTool() {
         {error && (
             <Alert variant="destructive">
               <AlertTriangle className="h-4 w-4" />
-              <AlertTitle>Error</AlertTitle>
+              <AlertTitle>{t('errorTitle')}</AlertTitle>
               <AlertDescription>{error}</AlertDescription>
             </Alert>
         )}
