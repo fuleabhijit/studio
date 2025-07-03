@@ -3,7 +3,7 @@
 
 import { useState, useRef, type ChangeEvent, useEffect } from 'react';
 import Image from 'next/image';
-import { UploadCloud, LoaderCircle, AlertTriangle, Bot, Stethoscope, Sparkles } from 'lucide-react';
+import { UploadCloud, LoaderCircle, AlertTriangle, Bot, Stethoscope, Sparkles, Volume2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,7 +11,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useGeolocation } from '@/hooks/useGeolocation';
-import { getDiagnosis, getTranslatedDiagnosis } from '@/lib/actions';
+import { getDiagnosis, getTranslatedDiagnosis, getSpeechFromText } from '@/lib/actions';
 import type { AnalyzeCropImageOutput } from '@/ai/flows/analyze-crop-image';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/context/LanguageContext';
@@ -26,6 +26,8 @@ export default function DiagnosisTool() {
   const location = useGeolocation();
   const { toast } = useToast();
   const { t, language } = useLanguage();
+  const [ttsLoading, setTtsLoading] = useState<string | null>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
     // When language changes, clear the result as it might be in the wrong language
@@ -105,12 +107,70 @@ export default function DiagnosisTool() {
 
   const triggerFileSelect = () => fileInputRef.current?.click();
 
+  const handleTextToSpeech = async (section: 'diagnosis' | 'remedies') => {
+    if (!result) return;
+    setTtsLoading(section);
+
+    let textToSpeak = '';
+    if (section === 'diagnosis') {
+        textToSpeak = `${t('diagnosisTitle')}. `;
+        if (result.diseaseIdentification.diseaseDetected) {
+            if (result.diseaseIdentification.diseaseName && result.diseaseIdentification.diseaseName !== 'N/A') {
+                textToSpeak += `${t('diseaseIdentifiedLabel')}: ${result.diseaseIdentification.diseaseName}. `;
+            }
+            if (result.diseaseIdentification.pestName && result.diseaseIdentification.pestName !== 'N/A') {
+                textToSpeak += `${t('pestIdentifiedLabel')}: ${result.diseaseIdentification.pestName}.`;
+            }
+        } else {
+            textToSpeak += t('noDiseaseDetectedMessage');
+        }
+    } else if (section === 'remedies') {
+        textToSpeak = `${t('remedyRecommendationsTitle')}. `;
+        if (result.remedySuggestions && result.remedySuggestions.length > 0) {
+            textToSpeak += result.remedySuggestions.join('. ');
+        } else {
+            textToSpeak += t('noRemediesSuggested');
+        }
+        if (result.notes) {
+            textToSpeak += `. ${t('additionalNotesTitle')}. ${result.notes}`;
+        }
+    }
+
+    try {
+        const response = await getSpeechFromText(textToSpeak);
+        if (response.error || !response.data?.media) {
+            toast({
+                variant: 'destructive',
+                title: t('errorTitle'),
+                description: response.error || 'Failed to generate audio.',
+            });
+        } else if (audioRef.current) {
+            audioRef.current.src = response.data.media;
+            audioRef.current.play();
+        }
+    } catch (e) {
+        toast({
+            variant: 'destructive',
+            title: t('errorTitle'),
+            description: t('unexpectedError'),
+        });
+    } finally {
+        setTtsLoading(null);
+    }
+  };
+
   const renderResult = () => (
     <div className="space-y-6">
       <Card className="bg-card shadow-lg border-primary/20">
-        <CardHeader className="flex flex-row items-center gap-4">
-          <Stethoscope className="w-8 h-8 text-primary" />
-          <CardTitle className="font-headline text-2xl">{t('diagnosisTitle')}</CardTitle>
+        <CardHeader className="flex flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <Stethoscope className="w-8 h-8 text-primary" />
+            <CardTitle className="font-headline text-2xl">{t('diagnosisTitle')}</CardTitle>
+          </div>
+          <Button variant="ghost" size="icon" onClick={() => handleTextToSpeech('diagnosis')} disabled={!!ttsLoading}>
+            {ttsLoading === 'diagnosis' ? <LoaderCircle className="h-5 w-5 animate-spin" /> : <Volume2 className="w-5 h-5" />}
+            <span className="sr-only">Read diagnosis aloud</span>
+          </Button>
         </CardHeader>
         <CardContent className="space-y-4">
           {result?.diseaseIdentification.diseaseDetected ? (
@@ -135,9 +195,15 @@ export default function DiagnosisTool() {
       </Card>
 
       <Card className="bg-card shadow-lg border-accent/20">
-        <CardHeader className="flex flex-row items-center gap-4">
-          <Sparkles className="w-8 h-8 text-accent" />
-          <CardTitle className="font-headline text-2xl">{t('remedyRecommendationsTitle')}</CardTitle>
+        <CardHeader className="flex flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <Sparkles className="w-8 h-8 text-accent" />
+            <CardTitle className="font-headline text-2xl">{t('remedyRecommendationsTitle')}</CardTitle>
+          </div>
+          <Button variant="ghost" size="icon" onClick={() => handleTextToSpeech('remedies')} disabled={!!ttsLoading}>
+            {ttsLoading === 'remedies' ? <LoaderCircle className="h-5 w-5 animate-spin" /> : <Volume2 className="w-5 h-5" />}
+            <span className="sr-only">Read remedies aloud</span>
+          </Button>
         </CardHeader>
         <CardContent className="space-y-4">
            {result?.remedySuggestions && result.remedySuggestions.length > 0 ? (
@@ -196,70 +262,73 @@ export default function DiagnosisTool() {
   );
 
   return (
-    <div className="grid md:grid-cols-2 gap-8 lg:gap-12 items-start">
-      <div className="space-y-6">
-        <Card className="shadow-lg">
-          <CardHeader>
-            <CardTitle className="font-headline text-2xl">{t('uploadTitle')}</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div
-              className="border-2 border-dashed border-border rounded-lg p-8 text-center cursor-pointer hover:border-primary hover:bg-secondary transition-colors"
-              onClick={triggerFileSelect}
-              onDragOver={(e) => e.preventDefault()}
-              onDrop={(e) => {
-                e.preventDefault();
-                const file = e.dataTransfer.files?.[0];
-                if(file) handleFileChange({ target: { files: [file] } } as any);
-              }}
-            >
-              <UploadCloud className="mx-auto h-12 w-12 text-muted-foreground" />
-              <p className="mt-4 text-muted-foreground">
-                {t('uploadPrompt')}
-              </p>
-              <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleFileChange}
-                className="hidden"
-                accept="image/*"
-              />
-            </div>
-
-            {imagePreview && (
-              <div className="mt-4 border rounded-lg overflow-hidden shadow-sm">
-                <Image
-                  src={imagePreview}
-                  alt="Plant preview"
-                  width={500}
-                  height={500}
-                  className="w-full h-auto object-cover"
+    <>
+      <div className="grid md:grid-cols-2 gap-8 lg:gap-12 items-start">
+        <div className="space-y-6">
+          <Card className="shadow-lg">
+            <CardHeader>
+              <CardTitle className="font-headline text-2xl">{t('uploadTitle')}</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div
+                className="border-2 border-dashed border-border rounded-lg p-8 text-center cursor-pointer hover:border-primary hover:bg-secondary transition-colors"
+                onClick={triggerFileSelect}
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  const file = e.dataTransfer.files?.[0];
+                  if(file) handleFileChange({ target: { files: [file] } } as any);
+                }}
+              >
+                <UploadCloud className="mx-auto h-12 w-12 text-muted-foreground" />
+                <p className="mt-4 text-muted-foreground">
+                  {t('uploadPrompt')}
+                </p>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  className="hidden"
+                  accept="image/*"
                 />
               </div>
-            )}
-            
-            <Button
-              onClick={handleDiagnose}
-              disabled={!imageFile || isLoading}
-              className="w-full text-lg py-6 bg-accent text-accent-foreground hover:bg-accent/90"
-              size="lg"
-            >
-              {isLoading && <LoaderCircle className="mr-2 h-5 w-5 animate-spin" />}
-              {isLoading ? t('diagnosingButton') : t('diagnoseButton')}
-            </Button>
-          </CardContent>
-        </Card>
+
+              {imagePreview && (
+                <div className="mt-4 border rounded-lg overflow-hidden shadow-sm">
+                  <Image
+                    src={imagePreview}
+                    alt="Plant preview"
+                    width={500}
+                    height={500}
+                    className="w-full h-auto object-cover"
+                  />
+                </div>
+              )}
+              
+              <Button
+                onClick={handleDiagnose}
+                disabled={!imageFile || isLoading}
+                className="w-full text-lg py-6 bg-accent text-accent-foreground hover:bg-accent/90"
+                size="lg"
+              >
+                {isLoading && <LoaderCircle className="mr-2 h-5 w-5 animate-spin" />}
+                {isLoading ? t('diagnosingButton') : t('diagnoseButton')}
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+        <div className="space-y-6">
+          {error && (
+              <Alert variant="destructive">
+                <AlertTriangle className="h-4 w-4" />
+                <AlertTitle>{t('errorTitle')}</AlertTitle>
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+          )}
+          {isLoading ? renderLoading() : result ? renderResult() : renderPlaceholder()}
+        </div>
       </div>
-      <div className="space-y-6">
-        {error && (
-            <Alert variant="destructive">
-              <AlertTriangle className="h-4 w-4" />
-              <AlertTitle>{t('errorTitle')}</AlertTitle>
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-        )}
-        {isLoading ? renderLoading() : result ? renderResult() : renderPlaceholder()}
-      </div>
-    </div>
+      <audio ref={audioRef} className="hidden" />
+    </>
   );
 }

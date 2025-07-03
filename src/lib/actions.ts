@@ -3,6 +3,7 @@
 
 import { analyzeCropImage, type AnalyzeCropImageInput, type AnalyzeCropImageOutput } from '@/ai/flows/analyze-crop-image';
 import { translateText } from '@/ai/flows/translate-text';
+import { textToSpeech } from '@/ai/flows/text-to-speech';
 import { z } from 'zod';
 import type { Language } from './translations';
 import { AnalyzeCropImageOutputSchema } from '@/ai/schemas';
@@ -98,5 +99,20 @@ export async function getTranslatedDiagnosis(
         return { error: 'Invalid input provided for translation.' };
     }
     return { error: 'An unexpected error occurred during translation. Please try again.' };
+  }
+}
+
+export async function getSpeechFromText(
+  text: string
+): Promise<{ data?: { media: string }; error?: string }> {
+  if (!text) {
+    return { error: 'No text provided for speech synthesis.' };
+  }
+  try {
+    const result = await textToSpeech(text);
+    return { data: result };
+  } catch (error) {
+    console.error('Error in getSpeechFromText action:', error);
+    return { error: 'An unexpected error occurred during text-to-speech conversion.' };
   }
 }
