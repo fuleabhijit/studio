@@ -144,9 +144,18 @@ export default function DiagnosisTool() {
                 title: t('errorTitle'),
                 description: response.error || 'Failed to generate audio.',
             });
+            setTtsLoading(null);
         } else if (audioRef.current) {
             audioRef.current.src = response.data.media;
-            audioRef.current.play();
+            audioRef.current.play().catch(err => {
+                console.error("Audio playback failed:", err);
+                toast({
+                    variant: 'destructive',
+                    title: 'Audio Error',
+                    description: 'Could not play audio.',
+                });
+                setTtsLoading(null);
+            });
         }
     } catch (e) {
         toast({
@@ -154,7 +163,6 @@ export default function DiagnosisTool() {
             title: t('errorTitle'),
             description: t('unexpectedError'),
         });
-    } finally {
         setTtsLoading(null);
     }
   };
@@ -328,7 +336,7 @@ export default function DiagnosisTool() {
           {isLoading ? renderLoading() : result ? renderResult() : renderPlaceholder()}
         </div>
       </div>
-      <audio ref={audioRef} className="hidden" />
+      <audio ref={audioRef} className="hidden" onEnded={() => setTtsLoading(null)} />
     </>
   );
 }
