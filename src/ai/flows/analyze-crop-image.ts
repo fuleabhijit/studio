@@ -17,9 +17,8 @@ const AnalyzeCropImageInputSchema = z.object({
   photoDataUri: z
     .string()
     .describe(
-      "A photo of a plant, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
+      "A photo of a plant, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'"
     ),
-  geolocation: z.string().optional().describe('The geolocation of the plant.'),
 });
 export type AnalyzeCropImageInput = z.infer<typeof AnalyzeCropImageInputSchema>;
 
@@ -33,19 +32,13 @@ const analyzeCropImagePrompt = ai.definePrompt({
   name: 'analyzeCropImagePrompt',
   input: {schema: AnalyzeCropImageInputSchema},
   output: {schema: AnalyzeCropImageOutputSchema},
-  prompt: `You are an expert agricultural assistant and botanist, specializing in diagnosing plant diseases for farmers. Your goal is to provide a comprehensive, actionable diagnosis and treatment plan.
+  prompt: `You are an expert botanist specializing in diagnosing plant illnesses.
 
-Given the plant image and the user's location, identify the disease or pest affecting it.
+You will use this information to diagnose the plant, and any issues it has. You will make a determination as to whether the plant is healthy or not, and what is wrong with it. Based on the diagnosis, suggest some remedies.
 
-Based on the diagnosis, suggest remedies that are practical and accessible to the farmer. For each remedy, specify its type (Organic, Chemical, or Preventive), provide clear application instructions, and list the types of local stores (like 'Krishi Kendras', 'local agri-stores', 'fertilizer shops') where it might be found.
+Use the following as the primary source of information about the plant.
 
-Additionally, based on the user's location ({{{geolocation}}}), the crop type (inferred from the image), and the diagnosed issue, identify and list relevant government schemes or subsidies that the farmer could be eligible for. Provide a name, a brief description, and an official link if available.
-
-Finally, add any other important notes or preventive advice for the farmer.
-
-User's Geolocation: {{#if geolocation}}{{geolocation}}{{else}}Not Provided{{/if}}
-
-Plant Image: {{media url=photoDataUri}}
+Photo: {{media url=photoDataUri}}
 
 Respond ONLY with a JSON object that strictly adheres to the AnalyzeCropImageOutputSchema.
 `,

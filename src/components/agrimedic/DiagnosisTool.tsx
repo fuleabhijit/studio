@@ -3,7 +3,7 @@
 
 import { useState, useRef, type ChangeEvent, useEffect } from 'react';
 import Image from 'next/image';
-import { UploadCloud, LoaderCircle, AlertTriangle, Bot, Stethoscope, Sparkles, Volume2, Link as LinkIcon, Notebook, Building2, LandPlot } from 'lucide-react';
+import { UploadCloud, LoaderCircle, AlertTriangle, Bot, Stethoscope, Sparkles, Volume2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,14 +11,12 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { useGeolocation } from '@/hooks/useGeolocation';
 import { getDiagnosis, getTranslatedDiagnosis, getSpeechFromText } from '@/lib/actions';
 import type { AnalyzeCropImageOutput } from '@/ai/flows/analyze-crop-image';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/context/LanguageContext';
-import Link from 'next/link';
 
-type TTSSection = 'diagnosis' | 'remedies' | 'schemes' | 'notes';
+type TTSSection = 'diagnosis' | 'remedies';
 
 export default function DiagnosisTool() {
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -27,7 +25,6 @@ export default function DiagnosisTool() {
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<AnalyzeCropImageOutput | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const location = useGeolocation();
   const { toast } = useToast();
   const { t, language } = useLanguage();
   const [ttsLoading, setTtsLoading] = useState<TTSSection | null>(null);
@@ -67,19 +64,7 @@ export default function DiagnosisTool() {
     reader.onloadend = async () => {
         const photoDataUri = reader.result as string;
 
-        if (location.error) {
-            toast({
-                variant: 'destructive',
-                title: t('geolocationErrorTitle'),
-                description: t('geolocationErrorDescription'),
-            });
-        }
-        
-        const geolocationString = location.latitude && location.longitude 
-          ? `lat: ${location.latitude}, lon: ${location.longitude}`
-          : undefined;
-
-        const diagnosisResponse = await getDiagnosis({ photoDataUri, geolocation: geolocationString });
+        const diagnosisResponse = await getDiagnosis({ photoDataUri });
 
         if (diagnosisResponse.error) {
             setError(diagnosisResponse.error);
@@ -119,12 +104,7 @@ export default function DiagnosisTool() {
     if (section === 'diagnosis') {
         textToSpeak = `${t('diagnosisTitle')}. `;
         if (result.diseaseIdentification.diseaseDetected) {
-            if (result.diseaseIdentification.diseaseName && result.diseaseIdentification.diseaseName !== 'N/A') {
-                textToSpeak += `${t('diseaseIdentifiedLabel')}: ${result.diseaseIdentification.diseaseName}. `;
-            }
-            if (result.diseaseIdentification.pestName && result.diseaseIdentification.pestName !== 'N/A') {
-                textToSpeak += `${t('pestIdentifiedLabel')}: ${result.diseaseIdentification.pestName}.`;
-            }
+            textToSpeak += `${t('diseaseIdentifiedLabel')}: ${result.diseaseIdentification.diseaseName}`;
         } else {
             textToSpeak += t('noDiseaseDetectedMessage');
         }
@@ -132,22 +112,11 @@ export default function DiagnosisTool() {
         textToSpeak = `${t('remedyRecommendationsTitle')}. `;
         if (result.remedySuggestions && result.remedySuggestions.length > 0) {
             textToSpeak += result.remedySuggestions.map((remedy, index) => 
-              `Remedy ${index + 1}: ${remedy.name}. Type: ${remedy.type}. Description: ${remedy.description}. Available at: ${remedy.availability.join(', ')}`
+              `Remedy ${index + 1}: ${remedy.name}. Type: ${remedy.type}. Description: ${remedy.description}`
             ).join('. ');
         } else {
             textToSpeak += t('noRemediesSuggested');
         }
-    } else if (section === 'schemes') {
-        textToSpeak = `${t('governmentSchemesTitle')}. `;
-        if (result.governmentSchemes && result.governmentSchemes.length > 0) {
-            textToSpeak += result.governmentSchemes.map((scheme, index) => 
-              `Scheme ${index + 1}: ${scheme.name}. Description: ${scheme.description}`
-            ).join('. ');
-        } else {
-            textToSpeak += t('noSchemesFound');
-        }
-    } else if (section === 'notes') {
-        textToSpeak = `${t('additionalNotesTitle')}. ${result.notes}`;
     }
 
     try {
@@ -168,6 +137,7 @@ export default function DiagnosisTool() {
                     title: 'Audio Error',
                     description: 'Could not play audio.',
                 });
+                setTtsLoading(null);
             });
         }
     } catch (e) {
@@ -212,10 +182,6 @@ export default function DiagnosisTool() {
                                 <h3 className="font-semibold text-lg">{t('diseaseIdentifiedLabel')}</h3>
                                 <p className="text-muted-foreground">{result.diseaseIdentification.diseaseName || t('notApplicable')}</p>
                             </div>
-                            <div>
-                                <h3 className="font-semibold text-lg">{t('pestIdentifiedLabel')}</h3>
-                                <p className="text-muted-foreground">{result.diseaseIdentification.pestName || t('notApplicable')}</p>
-                            </div>
                             <Badge variant="destructive">{t('diseaseDetectedBadge')}</Badge>
                         </>
                     ) : (
@@ -227,8 +193,8 @@ export default function DiagnosisTool() {
                 </CardContent>
             </Card>
 
-            <Accordion type="multiple" defaultValue={['remedies', 'schemes', 'notes']} className="w-full space-y-4">
-                <Card className="bg-card shadow-lg border-accent/20">
+            <Card className="bg-card shadow-lg border-accent/20">
+                <Accordion type="single" collapsible className="w-full">
                     <AccordionItem value="remedies" className="border-b-0">
                         <AccordionTrigger className="p-6 hover:no-underline">
                            <div className="flex items-center justify-between w-full">
@@ -252,12 +218,6 @@ export default function DiagnosisTool() {
                                                 <Badge variant={getRemedyTypeBadgeVariant(remedy.type)}>{remedy.type}</Badge>
                                             </div>
                                             <p className="text-muted-foreground mt-2">{remedy.description}</p>
-                                            <div className="mt-4">
-                                                <h5 className="font-semibold flex items-center gap-2"><Building2 className="w-4 h-4"/> {t('availabilityLabel')}</h5>
-                                                <ul className="list-disc pl-5 mt-1 text-sm text-muted-foreground">
-                                                    {remedy.availability.map((store, i) => <li key={i}>{store}</li>)}
-                                                </ul>
-                                            </div>
                                         </Card>
                                     ))}
                                 </div>
@@ -266,68 +226,8 @@ export default function DiagnosisTool() {
                             )}
                         </AccordionContent>
                     </AccordionItem>
-                </Card>
-
-                <Card className="bg-card shadow-lg border-secondary/20">
-                    <AccordionItem value="schemes" className="border-b-0">
-                         <AccordionTrigger className="p-6 hover:no-underline">
-                           <div className="flex items-center justify-between w-full">
-                                <div className="flex items-center gap-4">
-                                    <LandPlot className="w-8 h-8 text-secondary-foreground" />
-                                    <CardTitle className="font-headline text-2xl">{t('governmentSchemesTitle')}</CardTitle>
-                                </div>
-                                <Button variant="ghost" size="icon" onClick={(e) => {e.stopPropagation(); handleTextToSpeech('schemes')}} disabled={!!ttsLoading}>
-                                    {ttsLoading === 'schemes' ? <LoaderCircle className="h-5 w-5 animate-spin" /> : <Volume2 className="w-5 h-5" />}
-                                    <span className="sr-only">Read schemes</span>
-                                </Button>
-                           </div>
-                        </AccordionTrigger>
-                        <AccordionContent className="px-6 pb-6">
-                            {result.governmentSchemes && result.governmentSchemes.length > 0 ? (
-                               <div className="space-y-4">
-                                    {result.governmentSchemes.map((scheme, index) => (
-                                        <Card key={index} className="bg-background p-4">
-                                            <h4 className="font-bold text-lg">{scheme.name}</h4>
-                                            <p className="text-muted-foreground mt-2 text-sm">{scheme.description}</p>
-                                            {scheme.link && (
-                                                <Button asChild variant="link" className="px-0 h-auto mt-2">
-                                                    <Link href={scheme.link} target="_blank" rel="noopener noreferrer">
-                                                        {t('schemeLinkLabel')} <LinkIcon className="w-4 h-4 ml-2" />
-                                                    </Link>
-                                                </Button>
-                                            )}
-                                        </Card>
-                                    ))}
-                               </div>
-                            ) : (
-                                <p className="text-muted-foreground">{t('noSchemesFound')}</p>
-                            )}
-                        </AccordionContent>
-                    </AccordionItem>
-                </Card>
-                
-                {result.notes && (
-                    <Card className="bg-card shadow-lg border-muted/50">
-                        <AccordionItem value="notes" className="border-b-0">
-                            <AccordionTrigger className="p-6 hover:no-underline">
-                               <div className="flex items-center justify-between w-full">
-                                    <div className="flex items-center gap-4">
-                                        <Notebook className="w-8 h-8 text-muted-foreground" />
-                                        <CardTitle className="font-headline text-2xl">{t('additionalNotesTitle')}</CardTitle>
-                                    </div>
-                                    <Button variant="ghost" size="icon" onClick={(e) => {e.stopPropagation(); handleTextToSpeech('notes')}} disabled={!!ttsLoading}>
-                                        {ttsLoading === 'notes' ? <LoaderCircle className="h-5 w-5 animate-spin" /> : <Volume2 className="w-5 h-5" />}
-                                        <span className="sr-only">Read notes</span>
-                                    </Button>
-                               </div>
-                            </AccordionTrigger>
-                            <AccordionContent className="px-6 pb-6">
-                                <p className="text-muted-foreground whitespace-pre-wrap">{result.notes}</p>
-                            </AccordionContent>
-                        </AccordionItem>
-                    </Card>
-                )}
-            </Accordion>
+                </Accordion>
+            </Card>
         </div>
     );
   };
@@ -346,10 +246,6 @@ export default function DiagnosisTool() {
        <Card>
         <CardHeader><Skeleton className="h-8 w-3/4" /></CardHeader>
         <CardContent><Skeleton className="h-20 w-full" /></CardContent>
-       </Card>
-       <Card>
-        <CardHeader><Skeleton className="h-8 w-2/3" /></CardHeader>
-        <CardContent><Skeleton className="h-16 w-full" /></CardContent>
        </Card>
     </div>
   );

@@ -10,7 +10,6 @@ import { AnalyzeCropImageOutputSchema } from '@/ai/schemas';
 
 const ActionInputSchema = z.object({
   photoDataUri: z.string(),
-  geolocation: z.string().optional(),
 });
 
 export async function getDiagnosis(
@@ -55,15 +54,9 @@ export async function getTranslatedDiagnosis(
     };
     
     addText(diagnosis.diseaseIdentification.diseaseName);
-    addText(diagnosis.diseaseIdentification.pestName);
     diagnosis.remedySuggestions.forEach(remedy => {
         addText(remedy.name);
         addText(remedy.description);
-        remedy.availability.forEach(store => addText(store));
-    });
-    diagnosis.governmentSchemes.forEach(scheme => {
-        addText(scheme.name);
-        addText(scheme.description);
     });
     addText(diagnosis.notes);
 
@@ -96,17 +89,10 @@ export async function getTranslatedDiagnosis(
     const translateField = (text: string | undefined | null) => (text && text.trim() && text.trim().toLowerCase() !== 'n/a' && translationMap.get(text.trim())) || text;
 
     translatedDiagnosis.diseaseIdentification.diseaseName = translateField(diagnosis.diseaseIdentification.diseaseName);
-    translatedDiagnosis.diseaseIdentification.pestName = translateField(diagnosis.diseaseIdentification.pestName);
 
     translatedDiagnosis.remedySuggestions.forEach((remedy: any, index: number) => {
         remedy.name = translateField(diagnosis.remedySuggestions[index].name);
         remedy.description = translateField(diagnosis.remedySuggestions[index].description);
-        remedy.availability = diagnosis.remedySuggestions[index].availability.map(store => translateField(store));
-    });
-
-    translatedDiagnosis.governmentSchemes.forEach((scheme: any, index: number) => {
-        scheme.name = translateField(diagnosis.governmentSchemes[index].name);
-        scheme.description = translateField(diagnosis.governmentSchemes[index].description);
     });
 
     if (diagnosis.notes) {
