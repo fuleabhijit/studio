@@ -4,7 +4,7 @@
 import 'regenerator-runtime/runtime';
 import { useState, useRef, type ChangeEvent, useEffect } from 'react';
 import Image from 'next/image';
-import { UploadCloud, LoaderCircle, AlertTriangle, Bot, Stethoscope, Sparkles, Volume2, Mic, MicOff } from 'lucide-react';
+import { Camera, LoaderCircle, AlertTriangle, HeartPulse, FlaskConical, Volume2, Mic, MicOff, Flower2 } from 'lucide-react';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 
 import { Button } from '@/components/ui/button';
@@ -213,7 +213,7 @@ export default function DiagnosisTool() {
             <Card className="bg-card shadow-lg border-primary/20">
                 <CardHeader className="flex flex-row items-center justify-between gap-4">
                     <div className="flex items-center gap-4">
-                        <Stethoscope className="w-8 h-8 text-primary" />
+                        <HeartPulse className="w-8 h-8 text-primary" />
                         <CardTitle className="font-headline text-2xl">{t('diagnosisTitle')}</CardTitle>
                     </div>
                     <Button variant="ghost" size="icon" onClick={() => handleTextToSpeech('diagnosis')} disabled={!!ttsLoading}>
@@ -244,7 +244,7 @@ export default function DiagnosisTool() {
                     <AccordionItem value="remedies" className="border-b-0">
                         <AccordionTrigger className="p-6 hover:no-underline">
                            <div className="flex items-center gap-4">
-                                <Sparkles className="w-8 h-8 text-accent" />
+                                <FlaskConical className="w-8 h-8 text-accent" />
                                 <CardTitle className="font-headline text-2xl">{t('remedyRecommendationsTitle')}</CardTitle>
                            </div>
                         </AccordionTrigger>
@@ -279,26 +279,15 @@ export default function DiagnosisTool() {
   };
   
   const renderLoading = () => (
-    <div className="space-y-6">
-       <Card>
-         <CardHeader>
-          <Skeleton className="h-8 w-1/2" />
-         </CardHeader>
-         <CardContent className="space-y-4">
-           <Skeleton className="h-4 w-3/4" />
-           <Skeleton className="h-4 w-1/2" />
-         </CardContent>
-       </Card>
-       <Card>
-        <CardHeader><Skeleton className="h-8 w-3/4" /></CardHeader>
-        <CardContent><Skeleton className="h-20 w-full" /></CardContent>
-       </Card>
+    <div className="flex flex-col items-center justify-center text-center p-8 h-full">
+       <LoaderCircle className="w-16 h-16 text-primary animate-spin mb-4" />
+       <h2 className="text-2xl font-bold font-headline mb-2">{t('diagnosingButton')}</h2>
     </div>
   );
 
   const renderPlaceholder = () => (
-      <div className="flex flex-col items-center justify-center text-center p-8 border-2 border-dashed border-border rounded-lg h-full">
-          <Bot size={64} className="text-muted-foreground mb-4" />
+      <div className="flex flex-col items-center justify-center text-center p-8 border-2 border-dashed border-border rounded-lg h-full bg-card">
+          <Flower2 size={64} className="text-muted-foreground mb-4" />
           <h2 className="text-2xl font-bold font-headline mb-2">{t('placeholderTitle')}</h2>
           <p className="text-muted-foreground max-w-sm">
             {t('placeholderDescription')}
@@ -314,7 +303,7 @@ export default function DiagnosisTool() {
             <CardHeader>
               <CardTitle className="font-headline text-2xl">{t('uploadTitle')}</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-6">
               <div
                 className="border-2 border-dashed border-border rounded-lg p-8 text-center cursor-pointer hover:border-primary hover:bg-secondary transition-colors"
                 onClick={triggerFileSelect}
@@ -325,8 +314,8 @@ export default function DiagnosisTool() {
                   if(file) handleFileChange({ target: { files: [file] } } as any);
                 }}
               >
-                <UploadCloud className="mx-auto h-12 w-12 text-muted-foreground" />
-                <p className="mt-4 text-muted-foreground">
+                <Camera className="mx-auto h-16 w-16 text-muted-foreground" />
+                <p className="mt-4 text-lg text-muted-foreground">
                   {t('uploadPrompt')}
                 </p>
                 <input
@@ -378,7 +367,7 @@ export default function DiagnosisTool() {
               <Button
                 onClick={handleDiagnose}
                 disabled={!imageFile || isLoading}
-                className="w-full text-lg py-6 bg-accent text-accent-foreground hover:bg-accent/90"
+                className="w-full text-lg py-6 bg-accent text-accent-foreground hover:bg-accent/90 rounded-lg shadow-lg"
                 size="lg"
               >
                 {isLoading && <LoaderCircle className="mr-2 h-5 w-5 animate-spin" />}

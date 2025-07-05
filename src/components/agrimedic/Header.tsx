@@ -15,15 +15,15 @@ export default function Header() {
   const { t, setLanguage, language } = useLanguage();
 
   return (
-    <header className="bg-primary text-primary-foreground shadow-lg">
+    <header className="bg-primary text-primary-foreground shadow-md border-b border-primary/20">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-        <div className="flex items-center">
-          <Leaf className="h-8 w-8 mr-3 text-primary-foreground" />
+        <div className="flex items-center gap-3">
+          <Leaf className="h-8 w-8 text-primary-foreground" />
           <h1 className="text-2xl lg:text-3xl font-bold font-headline">{t('appTitle')}</h1>
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon">
+            <Button variant="ghost" className="rounded-full" size="icon">
               <Globe className="h-6 w-6" />
               <span className="sr-only">{t('language')}</span>
             </Button>
