@@ -33,18 +33,21 @@ const analyzeCropImagePrompt = ai.definePrompt({
   name: 'analyzeCropImagePrompt',
   input: {schema: AnalyzeCropImageInputSchema},
   output: {schema: AnalyzeCropImageOutputSchema},
-  prompt: `You are an expert in diagnosing plant diseases and pest infestations.
+  prompt: `You are an expert agricultural assistant and botanist, specializing in diagnosing plant diseases for farmers. Your goal is to provide a comprehensive, actionable diagnosis and treatment plan.
 
-You will analyze the provided image of the plant and identify any potential diseases or pests affecting it.
-Based on the identified issue, you will suggest affordable and locally available remedies, taking into account the provided geolocation if available.
+Given the plant image and the user's location, identify the disease or pest affecting it.
 
-Also, provide any other general notes or considerations.
+Based on the diagnosis, suggest remedies that are practical and accessible to the farmer. For each remedy, specify its type (Organic, Chemical, or Preventive), provide clear application instructions, and list the types of local stores (like 'Krishi Kendras', 'local agri-stores', 'fertilizer shops') where it might be found.
 
-Consider the cost and availability of the remedies in your suggestions.
+Additionally, based on the user's location ({{{geolocation}}}), the crop type (inferred from the image), and the diagnosed issue, identify and list relevant government schemes or subsidies that the farmer could be eligible for. Provide a name, a brief description, and an official link if available.
 
-Geolocation: {{geolocation}}
+Finally, add any other important notes or preventive advice for the farmer.
 
-Image: {{media url=photoDataUri}}
+User's Geolocation: {{#if geolocation}}{{geolocation}}{{else}}Not Provided{{/if}}
+
+Plant Image: {{media url=photoDataUri}}
+
+Respond ONLY with a JSON object that strictly adheres to the AnalyzeCropImageOutputSchema.
 `,
 });
 

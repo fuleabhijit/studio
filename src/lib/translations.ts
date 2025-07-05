@@ -28,6 +28,15 @@ export type TranslationKeys = {
   noRemediesSuggested: string;
   additionalNotesTitle: string;
   notApplicable: string;
+  remedyTypeLabel: string;
+  organicType: string;
+  chemicalType: string;
+  preventiveType: string;
+  availabilityLabel: string;
+  governmentSchemesTitle: string;
+  schemeDescriptionLabel: string;
+  schemeLinkLabel: string;
+  noSchemesFound: string;
 
   // Errors & Toasts
   selectImageError: string;
@@ -69,6 +78,15 @@ export const translations: Translations = {
     noRemediesSuggested: 'No specific remedies suggested.',
     additionalNotesTitle: 'Additional Notes',
     notApplicable: 'N/A',
+    remedyTypeLabel: 'Type',
+    organicType: 'Organic',
+    chemicalType: 'Chemical',
+    preventiveType: 'Preventive',
+    availabilityLabel: 'Local Availability',
+    governmentSchemesTitle: 'Government Schemes',
+    schemeDescriptionLabel: 'Description',
+    schemeLinkLabel: 'More Info',
+    noSchemesFound: 'No relevant government schemes were found for your location and crop.',
     selectImageError: 'Please select an image first.',
     readImageError: 'Failed to read the image file.',
     geolocationErrorTitle: 'Geolocation Error',
@@ -102,6 +120,15 @@ export const translations: Translations = {
     noRemediesSuggested: 'कोई विशेष उपचार का सुझाव नहीं दिया गया।',
     additionalNotesTitle: 'अतिरिक्त नोट्स',
     notApplicable: 'लागू नहीं',
+    remedyTypeLabel: 'प्रकार',
+    organicType: 'जैविक',
+    chemicalType: 'रासायनिक',
+    preventiveType: 'निवारक',
+    availabilityLabel: 'स्थानीय उपलब्धता',
+    governmentSchemesTitle: 'सरकारी योजनाएं',
+    schemeDescriptionLabel: 'विवरण',
+    schemeLinkLabel: 'और जानकारी',
+    noSchemesFound: 'आपके स्थान और फसल के लिए कोई प्रासंगिक सरकारी योजनाएं नहीं मिलीं।',
     selectImageError: 'कृपया पहले एक छवि चुनें।',
     readImageError: 'छवि फ़ाइल पढ़ने में विफल।',
     geolocationErrorTitle: 'जियोलोकेशन त्रुटि',
@@ -135,6 +162,15 @@ export const translations: Translations = {
     noRemediesSuggested: 'कोणतेही विशिष्ट उपाय सुचवलेले नाहीत.',
     additionalNotesTitle: 'अतिरिक्त टिपा',
     notApplicable: 'लागू नाही',
+    remedyTypeLabel: 'प्रकार',
+    organicType: 'सेंद्रिय',
+    chemicalType: 'रासायनिक',
+    preventiveType: 'प्रतिबंधात्मक',
+    availabilityLabel: 'स्थानिक उपलब्धता',
+    governmentSchemesTitle: 'सरकारी योजना',
+    schemeDescriptionLabel: 'वर्णन',
+    schemeLinkLabel: 'अधिक माहिती',
+    noSchemesFound: 'तुमच्या स्थानासाठी आणि पिकासाठी कोणतीही संबंधित सरकारी योजना आढळली नाही.',
     selectImageError: 'कृपया प्रथम एक प्रतिमा निवडा.',
     readImageError: 'प्रतिमा फाइल वाचण्यात अयशस्वी.',
     geolocationErrorTitle: 'जिओलोकेशन त्रुटी',

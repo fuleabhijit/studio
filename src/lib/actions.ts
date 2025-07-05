@@ -47,20 +47,32 @@ export async function getTranslatedDiagnosis(
     const languageName = targetLanguage === 'hi' ? 'Hindi' : 'Marathi';
     const separator = '|||';
 
-    const textToTranslate: (string | undefined)[] = [
-      diagnosis.diseaseIdentification.diseaseName,
-      diagnosis.diseaseIdentification.pestName,
-      ...(diagnosis.remedySuggestions || []),
-      diagnosis.notes,
-    ];
+    const textsToTranslate: string[] = [];
+    const addText = (text: string | undefined | null) => {
+        if (text && text.trim() && text.trim().toLowerCase() !== 'n/a') {
+            textsToTranslate.push(text.trim());
+        }
+    };
     
-    const validTexts = textToTranslate.filter((t): t is string => !!t && t.trim() !== 'N/A' && t.trim() !== '');
+    addText(diagnosis.diseaseIdentification.diseaseName);
+    addText(diagnosis.diseaseIdentification.pestName);
+    diagnosis.remedySuggestions.forEach(remedy => {
+        addText(remedy.name);
+        addText(remedy.description);
+        remedy.availability.forEach(store => addText(store));
+    });
+    diagnosis.governmentSchemes.forEach(scheme => {
+        addText(scheme.name);
+        addText(scheme.description);
+    });
+    addText(diagnosis.notes);
 
-    if (validTexts.length === 0) {
+    const uniqueTexts = [...new Set(textsToTranslate)];
+    if (uniqueTexts.length === 0) {
       return { data: diagnosis };
     }
     
-    const combinedText = validTexts.join(separator);
+    const combinedText = uniqueTexts.join(separator);
     const translationResult = await translateText({ textToTranslate: combinedText, targetLanguage: languageName });
 
     if (!translationResult || !translationResult.translatedText) {
@@ -69,26 +81,36 @@ export async function getTranslatedDiagnosis(
 
     const translatedParts = translationResult.translatedText.split(separator);
 
-    if (translatedParts.length !== validTexts.length) {
+    if (translatedParts.length !== uniqueTexts.length) {
         console.warn("Translation returned a different number of parts than expected.");
         return { data: diagnosis };
     }
 
     const translationMap = new Map<string, string>();
-    validTexts.forEach((text, index) => {
+    uniqueTexts.forEach((text, index) => {
         translationMap.set(text, translatedParts[index]?.trim());
     });
 
     const translatedDiagnosis = JSON.parse(JSON.stringify(diagnosis));
 
-    translatedDiagnosis.diseaseIdentification.diseaseName = translationMap.get(diagnosis.diseaseIdentification.diseaseName) || diagnosis.diseaseIdentification.diseaseName;
-    translatedDiagnosis.diseaseIdentification.pestName = translationMap.get(diagnosis.diseaseIdentification.pestName) || diagnosis.diseaseIdentification.pestName;
+    const translateField = (text: string | undefined | null) => (text && text.trim() && text.trim().toLowerCase() !== 'n/a' && translationMap.get(text.trim())) || text;
 
-    if (diagnosis.remedySuggestions) {
-        translatedDiagnosis.remedySuggestions = diagnosis.remedySuggestions.map(remedy => translationMap.get(remedy) || remedy);
-    }
+    translatedDiagnosis.diseaseIdentification.diseaseName = translateField(diagnosis.diseaseIdentification.diseaseName);
+    translatedDiagnosis.diseaseIdentification.pestName = translateField(diagnosis.diseaseIdentification.pestName);
+
+    translatedDiagnosis.remedySuggestions.forEach((remedy: any, index: number) => {
+        remedy.name = translateField(diagnosis.remedySuggestions[index].name);
+        remedy.description = translateField(diagnosis.remedySuggestions[index].description);
+        remedy.availability = diagnosis.remedySuggestions[index].availability.map(store => translateField(store));
+    });
+
+    translatedDiagnosis.governmentSchemes.forEach((scheme: any, index: number) => {
+        scheme.name = translateField(diagnosis.governmentSchemes[index].name);
+        scheme.description = translateField(diagnosis.governmentSchemes[index].description);
+    });
+
     if (diagnosis.notes) {
-        translatedDiagnosis.notes = translationMap.get(diagnosis.notes) || diagnosis.notes;
+        translatedDiagnosis.notes = translateField(diagnosis.notes);
     }
     
     return { data: translatedDiagnosis };
