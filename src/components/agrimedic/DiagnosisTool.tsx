@@ -197,18 +197,18 @@ export default function DiagnosisTool() {
                 <Accordion type="single" collapsible className="w-full">
                     <AccordionItem value="remedies" className="border-b-0">
                         <AccordionTrigger className="p-6 hover:no-underline">
-                           <div className="flex items-center justify-between w-full">
-                                <div className="flex items-center gap-4">
-                                    <Sparkles className="w-8 h-8 text-accent" />
-                                    <CardTitle className="font-headline text-2xl">{t('remedyRecommendationsTitle')}</CardTitle>
-                                </div>
-                                <Button variant="ghost" size="icon" onClick={(e) => {e.stopPropagation(); handleTextToSpeech('remedies')}} disabled={!!ttsLoading}>
-                                    {ttsLoading === 'remedies' ? <LoaderCircle className="h-5 w-5 animate-spin" /> : <Volume2 className="w-5 h-5" />}
-                                    <span className="sr-only">Read remedies</span>
-                                </Button>
+                           <div className="flex items-center gap-4">
+                                <Sparkles className="w-8 h-8 text-accent" />
+                                <CardTitle className="font-headline text-2xl">{t('remedyRecommendationsTitle')}</CardTitle>
                            </div>
                         </AccordionTrigger>
                         <AccordionContent className="px-6 pb-6">
+                            <div className="flex justify-end -mt-4 mb-2">
+                                <Button variant="ghost" size="icon" onClick={() => handleTextToSpeech('remedies')} disabled={!!ttsLoading}>
+                                    {ttsLoading === 'remedies' ? <LoaderCircle className="h-5 w-5 animate-spin" /> : <Volume2 className="w-5 h-5" />}
+                                    <span className="sr-only">Read remedies</span>
+                                </Button>
+                            </div>
                             {result.remedySuggestions && result.remedySuggestions.length > 0 ? (
                                 <div className="space-y-4">
                                     {result.remedySuggestions.map((remedy, index) => (
