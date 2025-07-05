@@ -19,6 +19,7 @@ const AnalyzeCropImageInputSchema = z.object({
     .describe(
       "A photo of a plant, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'"
     ),
+    description: z.string().optional().describe('An optional text description of the plant issue, possibly from voice input.')
 });
 export type AnalyzeCropImageInput = z.infer<typeof AnalyzeCropImageInputSchema>;
 
@@ -39,6 +40,9 @@ You will use this information to diagnose the plant, and any issues it has. You 
 Use the following as the primary source of information about the plant.
 
 Photo: {{media url=photoDataUri}}
+{{#if description}}
+User's Description: {{{description}}}
+{{/if}}
 
 Respond ONLY with a JSON object that strictly adheres to the AnalyzeCropImageOutputSchema.
 `,

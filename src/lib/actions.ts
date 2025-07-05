@@ -10,6 +10,7 @@ import { AnalyzeCropImageOutputSchema } from '@/ai/schemas';
 
 const ActionInputSchema = z.object({
   photoDataUri: z.string(),
+  description: z.string().optional(),
 });
 
 export async function getDiagnosis(
@@ -28,9 +29,19 @@ export async function getDiagnosis(
   }
 }
 
+const languageMap: Record<Language, string> = {
+    en: 'English',
+    hi: 'Hindi',
+    mr: 'Marathi',
+    te: 'Telugu',
+    bn: 'Bengali',
+    ta: 'Tamil',
+    gu: 'Gujarati',
+};
+
 const TranslationActionInputSchema = z.object({
     diagnosis: AnalyzeCropImageOutputSchema,
-    targetLanguage: z.enum(['en', 'hi', 'mr']),
+    targetLanguage: z.enum(['en', 'hi', 'mr', 'te', 'bn', 'ta', 'gu']),
 });
 
 export async function getTranslatedDiagnosis(
@@ -43,7 +54,7 @@ export async function getTranslatedDiagnosis(
       return { data: diagnosis };
     }
 
-    const languageName = targetLanguage === 'hi' ? 'Hindi' : 'Marathi';
+    const languageName = languageMap[targetLanguage];
     const separator = '|||';
 
     const textsToTranslate: string[] = [];

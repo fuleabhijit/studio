@@ -1,9 +1,11 @@
 
 "use client";
 
+import 'regenerator-runtime/runtime';
 import { useState, useRef, type ChangeEvent, useEffect } from 'react';
 import Image from 'next/image';
-import { UploadCloud, LoaderCircle, AlertTriangle, Bot, Stethoscope, Sparkles, Volume2 } from 'lucide-react';
+import { UploadCloud, LoaderCircle, AlertTriangle, Bot, Stethoscope, Sparkles, Volume2, Mic, MicOff } from 'lucide-react';
+import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -15,12 +17,14 @@ import { getDiagnosis, getTranslatedDiagnosis, getSpeechFromText } from '@/lib/a
 import type { AnalyzeCropImageOutput } from '@/ai/flows/analyze-crop-image';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/context/LanguageContext';
+import { Textarea } from '@/components/ui/textarea';
 
 type TTSSection = 'diagnosis' | 'remedies';
 
 export default function DiagnosisTool() {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [description, setDescription] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<AnalyzeCropImageOutput | null>(null);
@@ -30,10 +34,53 @@ export default function DiagnosisTool() {
   const [ttsLoading, setTtsLoading] = useState<TTSSection | null>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
 
+  const {
+    transcript,
+    listening,
+    resetTranscript,
+    browserSupportsSpeechRecognition,
+    isMicrophoneAvailable,
+  } = useSpeechRecognition();
+
   useEffect(() => {
     setResult(null);
-  }, [language]);
+    resetTranscript();
+    setDescription('');
+  }, [language, resetTranscript]);
 
+  useEffect(() => {
+    if (transcript) {
+      setDescription(transcript);
+    }
+  }, [transcript]);
+
+  const startListening = () => SpeechRecognition.startListening({ continuous: true, language });
+  const stopListening = () => SpeechRecognition.stopListening();
+
+  const handleMicClick = () => {
+    if (listening) {
+      stopListening();
+    } else {
+      if (!browserSupportsSpeechRecognition) {
+        toast({
+            variant: 'destructive',
+            title: t('errorTitle'),
+            description: t('speechRecognitionNotSupported'),
+        });
+        return;
+      }
+      if (!isMicrophoneAvailable) {
+        toast({
+            variant: 'destructive',
+            title: t('errorTitle'),
+            description: t('microphoneNotAvailable'),
+        });
+        return;
+      }
+      resetTranscript();
+      startListening();
+    }
+  };
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -64,7 +111,7 @@ export default function DiagnosisTool() {
     reader.onloadend = async () => {
         const photoDataUri = reader.result as string;
 
-        const diagnosisResponse = await getDiagnosis({ photoDataUri });
+        const diagnosisResponse = await getDiagnosis({ photoDataUri, description });
 
         if (diagnosisResponse.error) {
             setError(diagnosisResponse.error);
@@ -137,7 +184,6 @@ export default function DiagnosisTool() {
                     title: 'Audio Error',
                     description: 'Could not play audio.',
                 });
-                setTtsLoading(null);
             });
         }
     } catch (e) {
@@ -194,7 +240,7 @@ export default function DiagnosisTool() {
             </Card>
 
             <Card className="bg-card shadow-lg border-accent/20">
-                <Accordion type="single" collapsible className="w-full">
+                 <Accordion type="single" collapsible className="w-full">
                     <AccordionItem value="remedies" className="border-b-0">
                         <AccordionTrigger className="p-6 hover:no-underline">
                            <div className="flex items-center gap-4">
@@ -304,6 +350,31 @@ export default function DiagnosisTool() {
                 </div>
               )}
               
+               <div className="space-y-2">
+                <label htmlFor="description" className="text-sm font-medium">{t('describeIssueLabel')}</label>
+                <div className="relative">
+                  <Textarea
+                    id="description"
+                    placeholder={t('describeIssuePlaceholder')}
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    className="pr-12"
+                    rows={3}
+                  />
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="absolute right-2 top-1/2 -translate-y-1/2"
+                    onClick={handleMicClick}
+                    title={listening ? t('stopListening') : t('startListening')}
+                  >
+                    {listening ? <MicOff className="h-5 w-5 text-destructive" /> : <Mic className="h-5 w-5" />}
+                    <span className="sr-only">{listening ? t('stopListening') : t('startListening')}</span>
+                  </Button>
+                </div>
+                {listening && <p className="text-sm text-primary animate-pulse">{t('listening')}</p>}
+              </div>
+              
               <Button
                 onClick={handleDiagnose}
                 disabled={!imageFile || isLoading}
@@ -327,7 +398,10 @@ export default function DiagnosisTool() {
           {isLoading ? renderLoading() : result ? renderResult() : renderPlaceholder()}
         </div>
       </div>
-      <audio ref={audioRef} className="hidden" onEnded={() => setTtsLoading(null)} onError={() => setTtsLoading(null)}/>
+      <audio ref={audioRef} className="hidden" onEnded={() => setTtsLoading(null)} onError={() => {
+        setTtsLoading(null);
+        toast({ variant: 'destructive', title: t('errorTitle'), description: 'Error playing audio.' });
+      }}/>
     </>
   );
 }

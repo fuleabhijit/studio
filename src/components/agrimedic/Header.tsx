@@ -38,6 +38,18 @@ export default function Header() {
             <DropdownMenuItem onClick={() => setLanguage('mr')} disabled={language === 'mr'}>
               {t('marathi')}
             </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setLanguage('te')} disabled={language === 'te'}>
+              {t('telugu')}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setLanguage('bn')} disabled={language === 'bn'}>
+              {t('bengali')}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setLanguage('ta')} disabled={language === 'ta'}>
+              {t('tamil')}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setLanguage('gu')} disabled={language === 'gu'}>
+              {t('gujarati')}
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

@@ -1,5 +1,5 @@
 
-export type Language = 'en' | 'hi' | 'mr';
+export type Language = 'en' | 'hi' | 'mr' | 'te' | 'bn' | 'ta' | 'gu';
 
 export type TranslationKeys = {
   // Header
@@ -37,6 +37,11 @@ export type TranslationKeys = {
   schemeDescriptionLabel: string;
   schemeLinkLabel: string;
   noSchemesFound: string;
+  describeIssueLabel: string;
+  describeIssuePlaceholder: string;
+  startListening: string;
+  stopListening: string;
+  listening: string;
 
   // Errors & Toasts
   selectImageError: string;
@@ -45,60 +50,80 @@ export type TranslationKeys = {
   geolocationErrorDescription: string;
   invalidInputError: string;
   unexpectedError: string;
+  speechRecognitionNotSupported: string;
+  microphoneNotAvailable: string;
   language: string;
   english: string;
   hindi: string;
   marathi: string;
+  telugu: string;
+  bengali: string;
+  tamil: string;
+  gujarati: string;
 };
 
 export type Translations = {
   [key in Language]: TranslationKeys;
 };
 
+const englishTranslations: TranslationKeys = {
+  appTitle: 'AgriMedic AI',
+  appDescription: 'Diagnose Crop Diseases Instantly',
+  footerCopyright: `© {year} AgriMedic AI. All rights reserved.`,
+  footerTagline: 'Empowering farmers with AI technology.',
+  uploadTitle: 'Upload Plant Photo',
+  uploadPrompt: 'Click to upload or drag and drop an image',
+  diagnoseButton: 'Diagnose Plant',
+  diagnosingButton: 'Diagnosing...',
+  placeholderTitle: 'AI Diagnosis Awaits',
+  placeholderDescription: 'Your plant\'s diagnosis and treatment suggestions will appear here once you upload a photo and start the analysis.',
+  errorTitle: 'Error',
+  diagnosisTitle: 'Diagnosis',
+  diseaseIdentifiedLabel: 'Disease Identified',
+  pestIdentifiedLabel: 'Pest Identified',
+  diseaseDetectedBadge: 'Disease Detected',
+  noDiseaseDetectedMessage: 'No disease or pest was confidently identified from the image.',
+  noDiseaseDetectedBadge: 'No Disease Detected',
+  remedyRecommendationsTitle: 'Remedy Recommendations',
+  noRemediesSuggested: 'No specific remedies suggested.',
+  additionalNotesTitle: 'Additional Notes',
+  notApplicable: 'N/A',
+  remedyTypeLabel: 'Type',
+  organicType: 'Organic',
+  chemicalType: 'Chemical',
+  preventiveType: 'Preventive',
+  availabilityLabel: 'Local Availability',
+  governmentSchemesTitle: 'Government Schemes',
+  schemeDescriptionLabel: 'Description',
+  schemeLinkLabel: 'More Info',
+  noSchemesFound: 'No relevant government schemes were found for your location and crop.',
+  describeIssueLabel: 'Or, describe the issue (optional)',
+  describeIssuePlaceholder: 'e.g., "The leaves are yellow with brown spots."',
+  startListening: 'Start Listening',
+  stopListening: 'Stop Listening',
+  listening: 'Listening...',
+  selectImageError: 'Please select an image first.',
+  readImageError: 'Failed to read the image file.',
+  geolocationErrorTitle: 'Geolocation Error',
+  geolocationErrorDescription: 'Could not get your location. Diagnosis will not be location-specific.',
+  invalidInputError: 'Invalid input provided.',
+  unexpectedError: 'An unexpected error occurred. Please try again.',
+  speechRecognitionNotSupported: 'Speech recognition is not supported by your browser.',
+  microphoneNotAvailable: 'Microphone is not available.',
+  language: 'Language',
+  english: 'English',
+  hindi: 'Hindi',
+  marathi: 'Marathi',
+  telugu: 'Telugu',
+  bengali: 'Bengali',
+  tamil: 'Tamil',
+  gujarati: 'Gujarati',
+};
+
 export const translations: Translations = {
-  en: {
-    appTitle: 'AgriMedic AI',
-    appDescription: 'Diagnose Crop Diseases Instantly',
-    footerCopyright: `© {year} AgriMedic AI. All rights reserved.`,
-    footerTagline: 'Empowering farmers with AI technology.',
-    uploadTitle: 'Upload Plant Photo',
-    uploadPrompt: 'Click to upload or drag and drop an image',
-    diagnoseButton: 'Diagnose Plant',
-    diagnosingButton: 'Diagnosing...',
-    placeholderTitle: 'AI Diagnosis Awaits',
-    placeholderDescription: 'Your plant\'s diagnosis and treatment suggestions will appear here once you upload a photo and start the analysis.',
-    errorTitle: 'Error',
-    diagnosisTitle: 'Diagnosis',
-    diseaseIdentifiedLabel: 'Disease Identified',
-    pestIdentifiedLabel: 'Pest Identified',
-    diseaseDetectedBadge: 'Disease Detected',
-    noDiseaseDetectedMessage: 'No disease or pest was confidently identified from the image.',
-    noDiseaseDetectedBadge: 'No Disease Detected',
-    remedyRecommendationsTitle: 'Remedy Recommendations',
-    noRemediesSuggested: 'No specific remedies suggested.',
-    additionalNotesTitle: 'Additional Notes',
-    notApplicable: 'N/A',
-    remedyTypeLabel: 'Type',
-    organicType: 'Organic',
-    chemicalType: 'Chemical',
-    preventiveType: 'Preventive',
-    availabilityLabel: 'Local Availability',
-    governmentSchemesTitle: 'Government Schemes',
-    schemeDescriptionLabel: 'Description',
-    schemeLinkLabel: 'More Info',
-    noSchemesFound: 'No relevant government schemes were found for your location and crop.',
-    selectImageError: 'Please select an image first.',
-    readImageError: 'Failed to read the image file.',
-    geolocationErrorTitle: 'Geolocation Error',
-    geolocationErrorDescription: 'Could not get your location. Diagnosis will not be location-specific.',
-    invalidInputError: 'Invalid input provided.',
-    unexpectedError: 'An unexpected error occurred. Please try again.',
-    language: 'Language',
-    english: 'English',
-    hindi: 'Hindi',
-    marathi: 'Marathi',
-  },
+  en: englishTranslations,
   hi: {
+    ...englishTranslations,
     appTitle: 'एग्रीमेडिक एआई',
     appDescription: 'फसल रोगों का तुरंत निदान करें',
     footerCopyright: '© {year} एग्रीमेडिक एआई। सर्वाधिकार सुरक्षित।',
@@ -112,35 +137,24 @@ export const translations: Translations = {
     errorTitle: 'त्रुटि',
     diagnosisTitle: 'निदान',
     diseaseIdentifiedLabel: 'पहचानी गई बीमारी',
-    pestIdentifiedLabel: 'पहचाना गया कीट',
     diseaseDetectedBadge: 'रोग का पता चला',
     noDiseaseDetectedMessage: 'छवि से किसी बीमारी या कीट की आत्मविश्वास से पहचान नहीं की गई।',
     noDiseaseDetectedBadge: 'कोई रोग नहीं मिला',
     remedyRecommendationsTitle: 'उपचार की सिफारिशें',
     noRemediesSuggested: 'कोई विशेष उपचार का सुझाव नहीं दिया गया।',
-    additionalNotesTitle: 'अतिरिक्त नोट्स',
-    notApplicable: 'लागू नहीं',
-    remedyTypeLabel: 'प्रकार',
-    organicType: 'जैविक',
-    chemicalType: 'रासायनिक',
-    preventiveType: 'निवारक',
-    availabilityLabel: 'स्थानीय उपलब्धता',
-    governmentSchemesTitle: 'सरकारी योजनाएं',
-    schemeDescriptionLabel: 'विवरण',
-    schemeLinkLabel: 'और जानकारी',
-    noSchemesFound: 'आपके स्थान और फसल के लिए कोई प्रासंगिक सरकारी योजनाएं नहीं मिलीं।',
+    describeIssueLabel: 'या, समस्या का वर्णन करें (वैकल्पिक)',
+    describeIssuePlaceholder: 'जैसे, "पत्तियों पर भूरे धब्बों के साथ पीलापन है। "',
+    startListening: 'सुनना शुरू करें',
+    stopListening: 'सुनना बंद करें',
+    listening: 'सुन रहा है...',
     selectImageError: 'कृपया पहले एक छवि चुनें।',
     readImageError: 'छवि फ़ाइल पढ़ने में विफल।',
-    geolocationErrorTitle: 'जियोलोकेशन त्रुटि',
-    geolocationErrorDescription: 'आपका स्थान प्राप्त नहीं हो सका। निदान स्थान-विशिष्ट नहीं होगा।',
-    invalidInputError: 'अमान्य इनपुट प्रदान किया गया।',
     unexpectedError: 'एक अप्रत्याशित त्रुटि हुई। कृपया पुन: प्रयास करें।',
     language: 'भाषा',
-    english: 'अंग्रेज़ी',
     hindi: 'हिंदी',
-    marathi: 'मराठी',
   },
   mr: {
+    ...englishTranslations,
     appTitle: 'अ‍ॅग्रीमेडिक एआय',
     appDescription: 'पीक रोगांचे त्वरित निदान करा',
     footerCopyright: '© {year} अ‍ॅग्रीमेडिक एआय. सर्व हक्क राखीव.',
@@ -154,32 +168,52 @@ export const translations: Translations = {
     errorTitle: 'त्रुटी',
     diagnosisTitle: 'निदान',
     diseaseIdentifiedLabel: 'ओळखलेला रोग',
-    pestIdentifiedLabel: 'ओळखलेला कीटक',
     diseaseDetectedBadge: 'रोग आढळला',
     noDiseaseDetectedMessage: 'प्रतिमेवरून कोणताही रोग किंवा कीटक आत्मविश्वासाने ओळखला गेला नाही.',
     noDiseaseDetectedBadge: ' कोणताही रोग आढळला नाही',
     remedyRecommendationsTitle: 'उपाय सूचना',
     noRemediesSuggested: 'कोणतेही विशिष्ट उपाय सुचवलेले नाहीत.',
-    additionalNotesTitle: 'अतिरिक्त टिपा',
-    notApplicable: 'लागू नाही',
-    remedyTypeLabel: 'प्रकार',
-    organicType: 'सेंद्रिय',
-    chemicalType: 'रासायनिक',
-    preventiveType: 'प्रतिबंधात्मक',
-    availabilityLabel: 'स्थानिक उपलब्धता',
-    governmentSchemesTitle: 'सरकारी योजना',
-    schemeDescriptionLabel: 'वर्णन',
-    schemeLinkLabel: 'अधिक माहिती',
-    noSchemesFound: 'तुमच्या स्थानासाठी आणि पिकासाठी कोणतीही संबंधित सरकारी योजना आढळली नाही.',
+    describeIssueLabel: 'किंवा, समस्येचे वर्णन करा (पर्यायी)',
+    describeIssuePlaceholder: 'उदा. "पाने तपकिरी डागांसह पिवळी आहेत."',
+    startListening: 'ऐकण्यास प्रारंभ करा',
+    stopListening: 'ऐकणे थांबवा',
+    listening: 'ऐकत आहे...',
     selectImageError: 'कृपया प्रथम एक प्रतिमा निवडा.',
     readImageError: 'प्रतिमा फाइल वाचण्यात अयशस्वी.',
-    geolocationErrorTitle: 'जिओलोकेशन त्रुटी',
-    geolocationErrorDescription: 'तुमचे स्थान मिळू शकले नाही. निदान स्थान-विशिष्ट होणार नाही.',
-    invalidInputError: 'अवैध इनपुट प्रदान केले.',
     unexpectedError: 'एक अनपेक्षित त्रुटी आली. कृपया पुन्हा प्रयत्न करा.',
     language: 'भाषा',
-    english: 'इंग्रजी',
-    hindi: 'हिंदी',
     marathi: 'मराठी',
+  },
+  te: {
+    ...englishTranslations,
+    language: 'భాష',
+    telugu: 'తెలుగు',
+    appTitle: 'అగ్రిమెడిక్ AI',
+    describeIssueLabel: 'లేదా, సమస్యను వివరించండి (ఐచ్ఛికం)',
+    listening: 'వినడం జరుగుతోంది...',
+  },
+  bn: {
+    ...englishTranslations,
+    language: 'ভাষা',
+    bengali: 'বাংলা',
+    appTitle: 'এগ্রিমেডিক এআই',
+    describeIssueLabel: 'অথবা, সমস্যাটি বর্ণনা করুন (ঐচ্ছিক)',
+    listening: 'শুনছি...',
+  },
+  ta: {
+    ...englishTranslations,
+    language: 'மொழி',
+    tamil: 'தமிழ்',
+    appTitle: 'அக்ரிமெடிக் AI',
+    describeIssueLabel: 'அல்லது, சிக்கலை விவரிக்கவும் (விருப்பத்தேர்வு)',
+    listening: 'கேட்கிறது...',
+  },
+  gu: {
+    ...englishTranslations,
+    language: 'ભાષા',
+    gujarati: 'ગુજરાતી',
+    appTitle: 'એગ્રીમેડિક એઆઈ',
+    describeIssueLabel: 'અથવા, સમસ્યાનું વર્ણન કરો (વૈકલ્પિક)',
+    listening: 'સાંભળી રહ્યું છે...',
   },
 };
