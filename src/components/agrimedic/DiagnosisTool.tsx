@@ -10,7 +10,7 @@ import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognitio
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
+import { Badge, type BadgeProps } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { getDiagnosis, getTranslatedDiagnosis, getSpeechFromText } from '@/lib/actions';
@@ -199,9 +199,9 @@ export default function DiagnosisTool() {
   const renderResult = () => {
     if (!result) return null;
 
-    const getRemedyTypeBadgeVariant = (type: 'Organic' | 'Chemical' | 'Preventive') => {
+    const getRemedyTypeBadgeVariant = (type: 'Organic' | 'Chemical' | 'Preventive'): BadgeProps['variant'] => {
         switch (type) {
-            case 'Organic': return 'secondary';
+            case 'Organic': return 'success';
             case 'Chemical': return 'destructive';
             case 'Preventive': return 'default';
             default: return 'outline';
@@ -233,7 +233,7 @@ export default function DiagnosisTool() {
                     ) : (
                         <>
                             <p className="text-lg">{t('noDiseaseDetectedMessage')}</p>
-                            <Badge variant="secondary">{t('noDiseaseDetectedBadge')}</Badge>
+                            <Badge variant="success">{t('noDiseaseDetectedBadge')}</Badge>
                         </>
                     )}
                 </CardContent>
@@ -297,13 +297,16 @@ export default function DiagnosisTool() {
 
   return (
     <>
+      <div className="mb-8 text-center">
+        <h2 className="text-3xl font-bold font-headline">{t('greeting')}</h2>
+      </div>
       <div className="grid md:grid-cols-2 gap-8 lg:gap-12 items-start">
         <div className="space-y-6">
           <Card className="shadow-lg">
             <CardHeader>
               <CardTitle className="font-headline text-2xl">{t('uploadTitle')}</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent>
               <div
                 className="border-2 border-dashed border-border rounded-lg p-8 text-center cursor-pointer hover:border-primary hover:bg-secondary transition-colors"
                 onClick={triggerFileSelect}
@@ -338,43 +341,43 @@ export default function DiagnosisTool() {
                   />
                 </div>
               )}
-              
-               <div className="space-y-2">
-                <label htmlFor="description" className="text-sm font-medium">{t('describeIssueLabel')}</label>
-                <div className="relative">
-                  <Textarea
-                    id="description"
-                    placeholder={t('describeIssuePlaceholder')}
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    className="pr-12"
-                    rows={3}
-                  />
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="absolute right-2 top-1/2 -translate-y-1/2"
-                    onClick={handleMicClick}
-                    title={listening ? t('stopListening') : t('startListening')}
-                  >
-                    {listening ? <MicOff className="h-5 w-5 text-destructive" /> : <Mic className="h-5 w-5" />}
-                    <span className="sr-only">{listening ? t('stopListening') : t('startListening')}</span>
-                  </Button>
-                </div>
-                {listening && <p className="text-sm text-primary animate-pulse">{t('listening')}</p>}
-              </div>
-              
-              <Button
-                onClick={handleDiagnose}
-                disabled={!imageFile || isLoading}
-                className="w-full text-lg py-6 bg-accent text-accent-foreground hover:bg-accent/90 rounded-lg shadow-lg"
-                size="lg"
-              >
-                {isLoading && <LoaderCircle className="mr-2 h-5 w-5 animate-spin" />}
-                {isLoading ? t('diagnosingButton') : t('diagnoseButton')}
-              </Button>
             </CardContent>
           </Card>
+          
+          <div className="space-y-2">
+            <label htmlFor="description" className="text-sm font-medium">{t('describeIssueLabel')}</label>
+            <div className="relative">
+              <Textarea
+                id="description"
+                placeholder={t('describeIssuePlaceholder')}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                className="pr-12"
+                rows={3}
+              />
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="absolute right-2 top-1/2 -translate-y-1/2"
+                onClick={handleMicClick}
+                title={listening ? t('stopListening') : t('startListening')}
+              >
+                {listening ? <MicOff className="h-5 w-5 text-destructive animate-pulse" /> : <Mic className="h-5 w-5" />}
+                <span className="sr-only">{listening ? t('stopListening') : t('startListening')}</span>
+              </Button>
+            </div>
+            {listening && <p className="text-sm text-primary animate-pulse">{t('listening')}</p>}
+          </div>
+          
+          <Button
+            onClick={handleDiagnose}
+            disabled={!imageFile || isLoading}
+            className="w-full text-lg py-6 bg-accent text-accent-foreground hover:bg-accent/90 rounded-lg shadow-lg"
+            size="lg"
+          >
+            {isLoading && <LoaderCircle className="mr-2 h-5 w-5 animate-spin" />}
+            {isLoading ? t('diagnosingButton') : t('diagnoseButton')}
+          </Button>
         </div>
         <div className="space-y-6">
           {error && (
