@@ -46,6 +46,37 @@ export type TranslationKeys = {
   stopListening: string;
   listening: string;
 
+  // Schemes Page
+  schemesNavTitle: string;
+  schemesPageTitle: string;
+  schemesPageDescription: string;
+  eligibilityFormTitle: string;
+  eligibilityFormDescription: string;
+  stateLabel: string;
+  statePlaceholder: string;
+  cropLabel: string;
+  cropPlaceholder: string;
+  landLabel: string;
+  categoryLabel: string;
+  categoryPlaceholder: string;
+  categoryGeneral: string;
+  categoryOBC: string;
+  categorySC: string;
+  categoryST: string;
+  queryLabel: string;
+  queryPlaceholder: string;
+  findSchemesButton: string;
+  findingSchemesButton: string;
+  schemesResultTitle: string;
+  noSchemesFoundError: string;
+  schemeEligibilityLabel: string;
+  schemeBenefitsLabel: string;
+  schemeApplyButton: string;
+  requiredError: string;
+  positiveNumberError: string;
+  queryMinLengthError: string;
+
+
   // Errors & Toasts
   selectImageError: string;
   readImageError: string;
@@ -106,6 +137,34 @@ const englishTranslations: TranslationKeys = {
   startListening: 'Start Listening',
   stopListening: 'Stop Listening',
   listening: 'Listening...',
+  schemesNavTitle: 'Govt. Schemes',
+  schemesPageTitle: 'Find Government Schemes',
+  schemesPageDescription: 'Enter your details below to find agricultural schemes you might be eligible for.',
+  eligibilityFormTitle: 'Your Profile',
+  eligibilityFormDescription: 'Provide a few details to help us find the right schemes for you.',
+  stateLabel: 'State / Union Territory',
+  statePlaceholder: 'Select your state',
+  cropLabel: 'Primary Crop (Optional)',
+  cropPlaceholder: 'e.g., "Rice", "Wheat", "Cotton"',
+  landLabel: 'Land Holding (in acres, Optional)',
+  categoryLabel: 'Social Category (Optional)',
+  categoryPlaceholder: 'Select a category',
+  categoryGeneral: 'General',
+  categoryOBC: 'OBC',
+  categorySC: 'SC',
+  categoryST: 'ST',
+  queryLabel: 'What are you looking for?',
+  queryPlaceholder: 'e.g., "drip irrigation subsidy", "help with buying seeds", "crop insurance"',
+  findSchemesButton: 'Find Schemes',
+  findingSchemesButton: 'Searching for schemes...',
+  schemesResultTitle: 'Eligible Schemes Found',
+  noSchemesFoundError: 'No schemes found matching your criteria. Try adjusting your search.',
+  schemeEligibilityLabel: 'Eligibility',
+  schemeBenefitsLabel: 'Benefits',
+  schemeApplyButton: 'Apply Here',
+  requiredError: 'This field is required.',
+  positiveNumberError: 'Please enter a valid number.',
+  queryMinLengthError: 'Please describe your need in a few more words.',
   selectImageError: 'Please select an image first.',
   readImageError: 'Failed to read the image file.',
   geolocationErrorTitle: 'Geolocation Error',
@@ -157,6 +216,24 @@ export const translations: Translations = {
     unexpectedError: 'एक अप्रत्याशित त्रुटि हुई। कृपया पुन: प्रयास करें।',
     language: 'भाषा',
     hindi: 'हिंदी',
+    schemesNavTitle: 'सरकारी योजनाएं',
+    schemesPageTitle: 'सरकारी योजनाएं खोजें',
+    schemesPageDescription: 'आप जिन कृषि योजनाओं के लिए पात्र हो सकते हैं, उन्हें खोजने के लिए नीचे अपना विवरण दर्ज करें।',
+    eligibilityFormTitle: 'आपकी प्रोफाइल',
+    eligibilityFormDescription: 'आपके लिए सही योजनाएं खोजने में हमारी मदद करने के लिए कुछ विवरण प्रदान करें।',
+    stateLabel: 'राज्य/केंद्र शासित प्रदेश',
+    statePlaceholder: 'अपना राज्य चुनें',
+    queryLabel: 'आप क्या ढूंढ रहे हैं?',
+    queryPlaceholder: 'जैसे, "ड्रिप सिंचाई सब्सिडी", "बीज खरीदने में मदद", "फसल बीमा"',
+    findSchemesButton: 'योजनाएं खोजें',
+    findingSchemesButton: 'योजनाएं खोजी जा रही हैं...',
+    schemesResultTitle: 'पात्र योजनाएं मिलीं',
+    noSchemesFoundError: 'आपके मानदंडों से मेल खाने वाली कोई योजना नहीं मिली। अपनी खोज को समायोजित करने का प्रयास करें।',
+    schemeEligibilityLabel: 'पात्रता',
+    schemeBenefitsLabel: 'लाभ',
+    schemeApplyButton: 'यहां आवेदन करें',
+    requiredError: 'यह फ़ील्ड आवश्यक है।',
+    queryMinLengthError: 'कृपया अपनी आवश्यकता का कुछ और शब्दों में वर्णन करें।',
   },
   mr: {
     ...englishTranslations,
@@ -189,6 +266,24 @@ export const translations: Translations = {
     unexpectedError: 'एक अनपेक्षित त्रुटी आली. कृपया पुन्हा प्रयत्न करा.',
     language: 'भाषा',
     marathi: 'मराठी',
+    schemesNavTitle: 'शासकीय योजना',
+    schemesPageTitle: 'सरकारी योजना शोधा',
+    schemesPageDescription: 'तुम्ही पात्र असलेल्या कृषी योजना शोधण्यासाठी खाली तुमचे तपशील प्रविष्ट करा.',
+    eligibilityFormTitle: 'तुमची प्रोफाइल',
+    eligibilityFormDescription: 'तुमच्यासाठी योग्य योजना शोधण्यात आम्हाला मदत करण्यासाठी काही तपशील द्या.',
+    stateLabel: 'राज्य/केंद्रशासित प्रदेश',
+    statePlaceholder: 'तुमचे राज्य निवडा',
+    queryLabel: 'तुम्ही काय शोधत आहात?',
+    queryPlaceholder: 'उदा. "ठिबक सिंचन अनुदान", "बियाणे खरेदीसाठी मदत", "पीक विमा"',
+    findSchemesButton: 'योजना शोधा',
+    findingSchemesButton: 'योजना शोधत आहे...',
+    schemesResultTitle: 'पात्र योजना आढळल्या',
+    noSchemesFoundError: 'तुमच्या निकषांशी जुळणाऱ्या कोणत्याही योजना आढळल्या नाहीत. तुमचा शोध समायोजित करण्याचा प्रयत्न करा.',
+    schemeEligibilityLabel: 'पात्रता',
+    schemeBenefitsLabel: 'फायदे',
+    schemeApplyButton: 'येथे अर्ज करा',
+    requiredError: 'हे क्षेत्र आवश्यक आहे.',
+    queryMinLengthError: 'कृपया तुमच्या गरजेबद्दल आणखी काही शब्दांत वर्णन करा.',
   },
   te: {
     ...englishTranslations,

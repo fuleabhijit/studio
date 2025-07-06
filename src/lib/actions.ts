@@ -2,11 +2,12 @@
 'use server';
 
 import { analyzeCropImage, type AnalyzeCropImageInput, type AnalyzeCropImageOutput } from '@/ai/flows/analyze-crop-image';
+import { findGovtSchemes, type FindGovtSchemesOutput } from '@/ai/flows/find-govt-schemes';
 import { translateText } from '@/ai/flows/translate-text';
 import { textToSpeech } from '@/ai/flows/text-to-speech';
 import { z } from 'zod';
 import type { Language } from './translations';
-import { AnalyzeCropImageOutputSchema } from '@/ai/schemas';
+import { AnalyzeCropImageOutputSchema, FindGovtSchemesInputSchema } from '@/ai/schemas';
 
 const ActionInputSchema = z.object({
   photoDataUri: z.string(),
@@ -133,5 +134,21 @@ export async function getSpeechFromText(
   } catch (error) {
     console.error('Error in getSpeechFromText action:', error);
     return { error: 'An unexpected error occurred during text-to-speech conversion.' };
+  }
+}
+
+export async function getGovtSchemes(
+  input: z.infer<typeof FindGovtSchemesInputSchema>
+): Promise<{ data?: FindGovtSchemesOutput; error?: string }> {
+  try {
+    const validatedInput = FindGovtSchemesInputSchema.parse(input);
+    const result = await findGovtSchemes(validatedInput);
+    return { data: result };
+  } catch (error) {
+    console.error('Error in getGovtSchemes action:', error);
+     if (error instanceof z.ZodError) {
+        return { error: 'Invalid input provided for finding schemes.' };
+    }
+    return { error: 'An unexpected error occurred while fetching government schemes.' };
   }
 }
