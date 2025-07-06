@@ -1,7 +1,7 @@
 
 "use client";
 
-import { Leaf, Globe, NotebookText } from 'lucide-react';
+import { Leaf, Globe, NotebookText, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
 import { Button } from "@/components/ui/button"
@@ -25,6 +25,12 @@ export default function Header() {
           </Link>
         </div>
         <div className="flex items-center gap-2">
+            <Link href="/prices" passHref>
+                <Button variant="ghost" className="rounded-full hidden md:flex" size="icon" title="Market Prices">
+                    <TrendingUp className="h-6 w-6" />
+                    <span className="sr-only">Market Prices</span>
+                </Button>
+            </Link>
             <Link href="/schemes" passHref>
                 <Button variant="ghost" className="rounded-full hidden md:flex" size="icon" title={t('schemesNavTitle')}>
                     <NotebookText className="h-6 w-6" />

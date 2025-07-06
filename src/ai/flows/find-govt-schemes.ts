@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -10,7 +11,7 @@
 
 import {ai} from '@/ai/genkit';
 import { FindGovtSchemesInputSchema, GovtSchemesOutputSchema } from '@/ai/schemas';
-import type { z } from 'genkit';
+import type { z } from 'zod';
 
 export type FindGovtSchemesInput = z.infer<typeof FindGovtSchemesInputSchema>;
 export type FindGovtSchemesOutput = z.infer<typeof GovtSchemesOutputSchema>;

@@ -8,6 +8,7 @@ import { textToSpeech } from '@/ai/flows/text-to-speech';
 import { z } from 'zod';
 import type { Language } from './translations';
 import { AnalyzeCropImageOutputSchema, FindGovtSchemesInputSchema } from '@/ai/schemas';
+import { getMarketPriceAlertFlowWrapper, type PriceAlert } from '@/ai/flows/get-market-price-alert';
 
 const ActionInputSchema = z.object({
   photoDataUri: z.string(),
@@ -150,5 +151,15 @@ export async function getGovtSchemes(
         return { error: 'Invalid input provided for finding schemes.' };
     }
     return { error: 'An unexpected error occurred while fetching government schemes.' };
+  }
+}
+
+export async function getMarketPriceAlert(): Promise<{ data?: PriceAlert; error?: string }> {
+  try {
+    const result = await getMarketPriceAlertFlowWrapper();
+    return { data: result };
+  } catch (error) {
+    console.error('Error in getMarketPriceAlert action:', error);
+    return { error: 'An unexpected error occurred while fetching market prices.' };
   }
 }
