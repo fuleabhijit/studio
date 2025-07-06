@@ -52,6 +52,7 @@ const getLatestTomatoPrices = ai.defineTool(
 
 const priceAlertPrompt = ai.definePrompt({
     name: 'priceAlertPrompt',
+    model: 'googleai/gemini-2.0-flash',
     tools: [getLatestTomatoPrices],
     output: { schema: PriceAlertSchema },
     prompt: `You are an agricultural market analyst. A farmer wants to know the current tomato prices.

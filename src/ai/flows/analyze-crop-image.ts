@@ -31,6 +31,7 @@ export async function analyzeCropImage(input: AnalyzeCropImageInput): Promise<An
 
 const analyzeCropImagePrompt = ai.definePrompt({
   name: 'analyzeCropImagePrompt',
+  model: 'googleai/gemini-2.0-flash',
   input: {schema: AnalyzeCropImageInputSchema},
   output: {schema: AnalyzeCropImageOutputSchema},
   prompt: `You are an expert botanist specializing in diagnosing plant illnesses.

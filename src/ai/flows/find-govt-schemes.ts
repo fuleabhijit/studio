@@ -22,6 +22,7 @@ export async function findGovtSchemes(input: FindGovtSchemesInput): Promise<Find
 
 const prompt = ai.definePrompt({
   name: 'findGovtSchemesPrompt',
+  model: 'googleai/gemini-2.0-flash',
   input: {schema: FindGovtSchemesInputSchema},
   output: {schema: GovtSchemesOutputSchema},
   prompt: `You are an expert agricultural advisor specializing in Indian government schemes for farmers.

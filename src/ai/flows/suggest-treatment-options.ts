@@ -35,6 +35,7 @@ export async function suggestTreatmentOptions(input: SuggestTreatmentOptionsInpu
 
 const prompt = ai.definePrompt({
   name: 'suggestTreatmentOptionsPrompt',
+  model: 'googleai/gemini-2.0-flash',
   input: {schema: SuggestTreatmentOptionsInputSchema},
   output: {schema: SuggestTreatmentOptionsOutputSchema},
   prompt: `You are an agricultural expert, skilled in recommending treatments for plant diseases.
