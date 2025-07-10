@@ -7,9 +7,9 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <Header />
-      <main className="flex-grow container mx-auto px-4 py-8 md:py-12 -mt-[88px]">
+      <main className="flex-grow container mx-auto px-4 py-8 md:py-12">
         <div className="relative z-10">
-          <div className="h-[40vh] md:h-[50vh] flex items-center justify-center text-center bg-gradient-to-b from-primary/80 to-background rounded-b-3xl mb-12">
+          <div className="h-[40vh] md:h-[50vh] flex items-center justify-center text-center bg-gradient-to-b from-primary/80 to-background rounded-b-3xl mb-12 -mt-[68px]">
             <div>
               <h1 className="text-4xl md:text-6xl font-extrabold text-primary-foreground tracking-tight">
                 Your AI Plant Doctor

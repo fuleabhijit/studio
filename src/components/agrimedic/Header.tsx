@@ -20,17 +20,6 @@ export default function Header() {
   const { t } = useLanguage();
   const [isSheetOpen, setIsSheetOpen] = React.useState(false);
   const pathname = usePathname();
-  const [isScrolled, setIsScrolled] = React.useState(false);
-
-  React.useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
 
   const navLinks = [
     { href: "/prices", icon: TrendingUp, label: "Market Prices" },
@@ -39,8 +28,7 @@ export default function Header() {
 
   return (
     <header className={cn(
-        "sticky top-0 z-50 transition-all duration-300",
-        isScrolled ? "bg-primary text-primary-foreground shadow-md border-b border-primary/20" : "bg-transparent text-primary-foreground"
+        "sticky top-0 z-50 transition-all duration-300 bg-secondary text-secondary-foreground shadow-sm border-b border-secondary/20"
     )}>
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -52,7 +40,7 @@ export default function Header() {
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-2">
           {navLinks.map((link) => (
-            <Button asChild key={link.href} variant={pathname === link.href ? "secondary" : "ghost"}>
+            <Button asChild key={link.href} variant={pathname === link.href ? "default" : "ghost"}>
               <Link href={link.href} className="flex items-center gap-2">
                 <link.icon className="h-5 w-5" />
                 <span>{link.label}</span>
