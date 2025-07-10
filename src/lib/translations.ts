@@ -16,9 +16,6 @@ export type TranslationKeys = {
   heroTitle: string;
   heroSubtitle: string;
 
-  // Greeting
-  greeting: string;
-
   // Diagnosis Tool
   uploadTitle: string;
   uploadPrompt: string;
@@ -28,29 +25,26 @@ export type TranslationKeys = {
   placeholderDescription: string;
   errorTitle: string;
   diagnosisTitle: string;
-  diseaseIdentifiedLabel: string;
-  pestIdentifiedLabel: string;
   diseaseDetectedBadge: string;
   noDiseaseDetectedMessage: string;
   noDiseaseDetectedBadge: string;
   remedyRecommendationsTitle: string;
-  noRemediesSuggested: string;
-  additionalNotesTitle: string;
-  notApplicable: string;
-  remedyTypeLabel: string;
-  organicType: string;
-  chemicalType: string;
-  preventiveType: string;
-  availabilityLabel: string;
   governmentSchemesTitle: string;
-  schemeDescriptionLabel: string;
-  schemeLinkLabel: string;
-  noSchemesFound: string;
-  describeIssueLabel: string;
-  describeIssuePlaceholder: string;
-  startListening: string;
-  stopListening: string;
-  listening: string;
+  speakNowPrompt: string;
+  
+  // Voice Commands
+  voiceCommandUpload: string;
+  voiceCommandSelect: string;
+  voiceCommandChoose: string;
+  voiceCommandDiagnose: string;
+  voiceCommandCheck: string;
+  voiceCommandWhatsWrong: string;
+  voiceCommandClear: string;
+  voiceCommandReset: string;
+
+  // Buttons
+  shareButton: string;
+  saveButton: string;
 
   // Schemes Page
   schemesPageTitle: string;
@@ -84,13 +78,8 @@ export type TranslationKeys = {
 
   // Errors & Toasts
   selectImageError: string;
-  readImageError: string;
-  geolocationErrorTitle: string;
-  geolocationErrorDescription: string;
-  invalidInputError: string;
   unexpectedError: string;
   speechRecognitionNotSupported: string;
-  microphoneNotAvailable: string;
   language: string;
   english: string;
   hindi: string;
@@ -101,6 +90,9 @@ export type TranslationKeys = {
   gujarati: string;
   kannada: string;
   malayalam: string;
+  startListening: string;
+  stopListening: string;
+  listening: string;
 };
 
 export type Translations = {
@@ -116,38 +108,30 @@ const englishTranslations: TranslationKeys = {
   footerTagline: 'Empowering farmers with AI technology.',
   heroTitle: 'Your AI Plant Doctor',
   heroSubtitle: 'Snap a photo, get a diagnosis. Simple, fast, and for every farmer.',
-  greeting: 'Hello Farmer! Let’s care for your crops today!',
   uploadTitle: 'Upload a Photo of Your Plant',
-  uploadPrompt: 'Click or drag a photo here',
+  uploadPrompt: 'Click or Tap to Upload',
   diagnoseButton: 'Diagnose Plant',
   diagnosingButton: 'Checking your plant’s health...',
   placeholderTitle: 'Your Plant Doctor',
   placeholderDescription: 'Upload a photo of your plant to get a quick and accurate diagnosis from our AI assistant.',
   errorTitle: 'Error',
   diagnosisTitle: 'Diagnosis',
-  diseaseIdentifiedLabel: 'Disease Identified',
-  pestIdentifiedLabel: 'Pest Identified',
   diseaseDetectedBadge: 'Disease Detected',
   noDiseaseDetectedMessage: 'No disease or pest was confidently identified from the image.',
   noDiseaseDetectedBadge: 'Healthy',
   remedyRecommendationsTitle: 'Remedy Recommendations',
-  noRemediesSuggested: 'No specific remedies suggested.',
-  additionalNotesTitle: 'Additional Notes',
-  notApplicable: 'N/A',
-  remedyTypeLabel: 'Type',
-  organicType: 'Organic',
-  chemicalType: 'Chemical',
-  preventiveType: 'Preventive',
-  availabilityLabel: 'Local Availability',
   governmentSchemesTitle: 'Government Schemes',
-  schemeDescriptionLabel: 'Description',
-  schemeLinkLabel: 'More Info',
-  noSchemesFound: 'No relevant government schemes were found for your location and crop.',
-  describeIssueLabel: 'Or, describe the issue (optional)',
-  describeIssuePlaceholder: 'e.g., "The leaves are yellow with brown spots."',
-  startListening: 'Start Listening',
-  stopListening: 'Stop Listening',
-  listening: 'Listening...',
+  speakNowPrompt: 'Or, tap the mic to speak',
+  voiceCommandUpload: 'upload image',
+  voiceCommandSelect: 'select image',
+  voiceCommandChoose: 'choose photo',
+  voiceCommandDiagnose: 'diagnose plant',
+  voiceCommandCheck: 'check plant',
+  voiceCommandWhatsWrong: 'what is wrong with my crop',
+  voiceCommandClear: 'clear',
+  voiceCommandReset: 'reset',
+  shareButton: 'Share',
+  saveButton: 'Save',
   schemesPageTitle: 'Find Government Schemes',
   schemesPageDescription: 'Enter your details below to find agricultural schemes you might be eligible for.',
   eligibilityFormTitle: 'Your Profile',
@@ -176,13 +160,8 @@ const englishTranslations: TranslationKeys = {
   positiveNumberError: 'Please enter a valid number.',
   queryMinLengthError: 'Please describe your need in a few more words.',
   selectImageError: 'Please select an image first.',
-  readImageError: 'Failed to read the image file.',
-  geolocationErrorTitle: 'Geolocation Error',
-  geolocationErrorDescription: 'Could not get your location. Diagnosis will not be location-specific.',
-  invalidInputError: 'Invalid input provided.',
   unexpectedError: 'An unexpected error occurred. Please try again.',
   speechRecognitionNotSupported: 'Speech recognition is not supported by your browser.',
-  microphoneNotAvailable: 'Microphone is not available.',
   language: 'Language',
   english: 'English',
   hindi: 'Hindi',
@@ -193,6 +172,9 @@ const englishTranslations: TranslationKeys = {
   gujarati: 'Gujarati',
   kannada: 'Kannada',
   malayalam: 'Malayalam',
+  startListening: 'Start Listening',
+  stopListening: 'Stop Listening',
+  listening: 'Listening...',
 };
 
 export const translations: Translations = {
@@ -207,28 +189,27 @@ export const translations: Translations = {
     footerTagline: 'किसानों को एआई तकनीक से सशक्त बनाना।',
     heroTitle: 'आपका एआई प्लांट डॉक्टर',
     heroSubtitle: 'एक तस्वीर खींचो, निदान पाओ। सरल, तेज, और हर किसान के लिए।',
-    greeting: 'नमस्ते किसान! चलिए आज आपकी फसलों की देखभाल करें!',
-    uploadTitle: 'अपने पौधे की एक तस्वीर अपलोड करें',
-    uploadPrompt: 'यहां एक फोटो क्लिक करें या खींचें',
-    diagnoseButton: 'पौधे का निदान करें',
+    uploadPrompt: 'अपलोड करने के लिए क्लिक करें या टैप करें',
     diagnosingButton: 'आपके पौधे के स्वास्थ्य की जांच हो रही है...',
     placeholderTitle: 'आपका पौधा डॉक्टर',
     placeholderDescription: 'हमारे AI सहायक से त्वरित और सटीक निदान पाने के लिए अपने पौधे की एक तस्वीर अपलोड करें।',
     errorTitle: 'त्रुटि',
     diagnosisTitle: 'निदान',
-    diseaseIdentifiedLabel: 'पहचानी गई बीमारी',
     diseaseDetectedBadge: 'रोग का पता चला',
     noDiseaseDetectedMessage: 'छवि से किसी बीमारी या कीट की आत्मविश्वास से पहचान नहीं की गई।',
     noDiseaseDetectedBadge: 'स्वस्थ',
     remedyRecommendationsTitle: 'उपचार की सिफारिशें',
-    noRemediesSuggested: 'कोई विशेष उपचार का सुझाव नहीं दिया गया।',
-    describeIssueLabel: 'या, समस्या का वर्णन करें (वैकल्पिक)',
-    describeIssuePlaceholder: 'जैसे, "पत्तियों पर भूरे धब्बों के साथ पीलापन है। "',
+    governmentSchemesTitle: 'सरकारी योजनाएं',
+    speakNowPrompt: 'या, बोलने के लिए माइक पर टैप करें',
+    voiceCommandDiagnose: 'पौधे का निदान करें',
+    voiceCommandCheck: 'पौधा जांचें',
+    voiceCommandWhatsWrong: 'मेरी फसल में क्या खराबी है',
+    voiceCommandClear: 'हटाएं',
+    voiceCommandReset: 'रीसेट',
     startListening: 'सुनना शुरू करें',
     stopListening: 'सुनना बंद करें',
     listening: 'सुन रहा है...',
     selectImageError: 'कृपया पहले एक छवि चुनें।',
-    readImageError: 'छवि फ़ाइल पढ़ने में विफल।',
     unexpectedError: 'एक अप्रत्याशित त्रुटि हुई। कृपया पुन: प्रयास करें।',
     language: 'भाषा',
     hindi: 'हिंदी',
@@ -253,35 +234,31 @@ export const translations: Translations = {
   mr: {
     ...englishTranslations,
     appTitle: 'अ‍ॅग्रीमेडिक एआय',
-    appDescription: 'पीक रोगांचे त्वरित निदान करा',
     pricesNavTitle: 'बाजारभाव',
     schemesNavTitle: 'शासकीय योजना',
     footerCopyright: '© {year} अ‍ॅग्रीमेडिक एआय. सर्व हक्क राखीव.',
     footerTagline: 'शेतकऱ्यांना एआय तंत्रज्ञानाने सक्षम करणे.',
     heroTitle: 'तुमचा एआय वनस्पती डॉक्टर',
     heroSubtitle: 'एक फोटो स्नॅप करा, निदान मिळवा. सोपे, जलद आणि प्रत्येक शेतकऱ्यासाठी.',
-    greeting: 'नमस्कार शेतकरी! चला आज तुमच्या पिकांची काळजी घेऊया!',
-    uploadTitle: 'तुमच्या वनस्पतीचा फोटो अपलोड करा',
-    uploadPrompt: 'येथे फोटो क्लिक करा किंवा ड्रॅग करा',
-    diagnoseButton: 'वनस्पतीचे निदान करा',
+    uploadPrompt: 'अपलोड करण्यासाठी क्लिक करा किंवा टॅप करा',
     diagnosingButton: 'तुमच्या वनस्पतीच्या आरोग्याची तपासणी करत आहे...',
     placeholderTitle: 'तुमचा वनस्पती डॉक्टर',
     placeholderDescription: 'आमच्या AI सहाय्यकाकडून जलद आणि अचूक निदान मिळवण्यासाठी तुमच्या वनस्पनाचा फोटो अपलोड करा.',
     errorTitle: 'त्रुटी',
     diagnosisTitle: 'निदान',
-    diseaseIdentifiedLabel: 'ओळखलेला रोग',
     diseaseDetectedBadge: 'रोग आढळला',
     noDiseaseDetectedMessage: 'प्रतिमेवरून कोणताही रोग किंवा कीटक आत्मविश्वासाने ओळखला गेला नाही.',
     noDiseaseDetectedBadge: 'निरोगी',
     remedyRecommendationsTitle: 'उपाय सूचना',
-    noRemediesSuggested: 'कोणतेही विशिष्ट उपाय सुचवलेले नाहीत.',
-    describeIssueLabel: 'किंवा, समस्येचे वर्णन करा (पर्यायी)',
-    describeIssuePlaceholder: 'उदा. "पाने तपकिरी डागांसह पिवळी आहेत."',
+    governmentSchemesTitle: 'सरकारी योजना',
+    speakNowPrompt: 'किंवा, बोलण्यासाठी माइकवर टॅप करा',
+    voiceCommandDiagnose: 'वनस्पतीचे निदान करा',
+    voiceCommandCheck: 'वनस्पती तपासा',
+    voiceCommandWhatsWrong: 'माझ्या पिकात काय चूक आहे',
     startListening: 'ऐकण्यास प्रारंभ करा',
     stopListening: 'ऐकणे थांबवा',
     listening: 'ऐकत आहे...',
     selectImageError: 'कृपया प्रथम एक प्रतिमा निवडा.',
-    readImageError: 'प्रतिमा फाइल वाचण्यात अयशस्वी.',
     unexpectedError: 'एक अनपेक्षित त्रुटी आली. कृपया पुन्हा प्रयत्न करा.',
     language: 'भाषा',
     marathi: 'मराठी',
@@ -312,10 +289,7 @@ export const translations: Translations = {
     schemesNavTitle: 'ప్రభుత్వ పథకాలు',
     heroTitle: 'మీ AI మొక్కల డాక్టర్',
     heroSubtitle: 'ఒక ఫోటో తీయండి, ఒక రోగ నిర్ధారణ పొందండి. సులభమైన, వేగవంతమైనది మరియు ప్రతి రైతు కోసం.',
-    greeting: 'నమస్కారం రైతు! ఈ రోజు మీ పంటలను చూసుకుందాం!',
-    uploadTitle: 'మీ మొక్క యొక్క ఫోటోను అప్‌లోడ్ చేయండి',
     diagnosingButton: 'మీ మొక్క ఆరోగ్యాన్ని తనిఖీ చేస్తోంది...',
-    describeIssueLabel: 'లేదా, సమస్యను వివరించండి (ఐచ్ఛికం)',
     listening: 'వినడం జరుగుతోంది...',
   },
   bn: {
@@ -327,10 +301,7 @@ export const translations: Translations = {
     schemesNavTitle: 'সরকারি প্রকল্প',
     heroTitle: 'আপনার এআই প্ল্যান্ট ডাক্তার',
     heroSubtitle: 'একটি ছবি তুলুন, একটি রোগ নির্ণয় করুন। সহজ, দ্রুত এবং প্রতিটি কৃষকের জন্য।',
-    greeting: 'নমস্কার কৃষক! আসুন আজ আপনার ফসলের যত্ন নেওয়া যাক!',
-    uploadTitle: 'আপনার গাছের একটি ছবি আপলোড করুন',
     diagnosingButton: 'আপনার গাছের স্বাস্থ্য পরীক্ষা করা হচ্ছে...',
-    describeIssueLabel: 'অথবা, সমস্যাটি বর্ণনা করুন (ঐচ্ছিক)',
     listening: 'শুনছি...',
   },
   ta: {
@@ -342,10 +313,7 @@ export const translations: Translations = {
     schemesNavTitle: 'அரசு திட்டங்கள்',
     heroTitle: 'உங்கள் AI தாவர மருத்துவர்',
     heroSubtitle: 'ஒரு புகைப்படத்தை எடுங்கள், ஒரு நோயறிதலைப் பெறுங்கள். எளிமையானது, வேகமானது மற்றும் ஒவ்வொரு விவசாயிக்கும்.',
-    greeting: 'வணக்கம் விவசாயி! இன்று உங்கள் பயிர்களை கவனிப்போம்!',
-    uploadTitle: 'உங்கள் தாவரத்தின் புகைப்படத்தைப் பதிவேற்றவும்',
     diagnosingButton: 'உங்கள் தாவரத்தின் ஆரோக்கியத்தைச் சரிபார்க்கிறது...',
-    describeIssueLabel: 'அல்லது, சிக்கலை விவரிக்கவும் (விருப்பத்தேர்வு)',
     listening: 'கேட்கிறது...',
   },
   gu: {
@@ -357,10 +325,7 @@ export const translations: Translations = {
     schemesNavTitle: 'સરકારી યોજનાઓ',
     heroTitle: 'તમારા એઆઈ પ્લાન્ટ ડોક્ટર',
     heroSubtitle: 'એક ફોટો સ્નેપ કરો, નિદાન મેળવો. સરળ, ઝડપી અને દરેક ખેડૂત માટે.',
-    greeting: 'નમસ્તે ખેડૂત! ચાલો આજે તમારા પાકની સંભાળ લઈએ!',
-    uploadTitle: 'તમારા છોડનો ફોટો અપલોડ કરો',
     diagnosingButton: 'તમારા છોડના સ્વાસ્થ્યની તપાસ કરી રહ્યું છે...',
-    describeIssueLabel: 'અથવા, સમસ્યાનું વર્ણન કરો (વૈકલ્પિક)',
     listening: 'સાંભળી રહ્યું છે...',
   },
   kn: {
@@ -371,10 +336,7 @@ export const translations: Translations = {
     schemesNavTitle: 'ಸರ್ಕಾರಿ ಯೋಜನೆಗಳು',
     heroTitle: 'ನಿಮ್ಮ AI ಸಸ್ಯ ವೈದ್ಯ',
     heroSubtitle: 'ಒಂದು ಫೋಟೋ ತೆಗೆಯಿರಿ, ರೋಗನಿರ್ಣಯವನ್ನು ಪಡೆಯಿರಿ. ಸರಳ, ವೇಗ ಮತ್ತು ಪ್ರತಿಯೊಬ್ಬ ರೈತರಿಗಾಗಿ.',
-    greeting: 'ನಮಸ್ಕಾರ ರೈತ! ಇಂದು ನಿಮ್ಮ ಬೆಳೆಗಳನ್ನು ನೋಡಿಕೊಳ್ಳೋಣ!',
-    uploadTitle: 'ನಿಮ್ಮ ಸಸ್ಯದ ಫೋಟೋವನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಿ',
     diagnosingButton: 'ನಿಮ್ಮ ಸಸ್ಯದ ಆರೋಗ್ಯವನ್ನು ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ...',
-    describeIssueLabel: 'ಅಥವಾ, ಸಮಸ್ಯೆಯನ್ನು ವಿವರಿಸಿ (ಐಚ್ಛಿಕ)',
     listening: 'ಕೇಳುತ್ತಿದೆ...',
   },
   ml: {
@@ -385,10 +347,7 @@ export const translations: Translations = {
     schemesNavTitle: 'സർക്കാർ പദ്ധതികൾ',
     heroTitle: 'നിങ്ങളുടെ AI പ്ലാന്റ് ഡോക്ടർ',
     heroSubtitle: 'ഒരു ഫോട്ടോ എടുക്കുക, ഒരു രോഗനിർണയം നേടുക. ലളിതവും വേഗതയേറിയതും ഓരോ കർഷകനും.',
-    greeting: 'നമസ്കാരം കർഷകാ! ഇന്ന് നിങ്ങളുടെ വിളകളെ പരിപാലിക്കാം!',
-    uploadTitle: 'നിങ്ങളുടെ ചെടിയുടെ ഫോട്ടോ അപ്‌ലോഡ് ചെയ്യുക',
     diagnosingButton: 'നിങ്ങളുടെ ചെടിയുടെ ആരോഗ്യം പരിശോധിക്കുന്നു...',
-    describeIssueLabel: 'അല്ലെങ്കിൽ, പ്രശ്നം വിവരിക്കുക (ഓപ്ഷണൽ)',
     listening: 'കേൾക്കുന്നു...',
   },
 };

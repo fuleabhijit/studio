@@ -4,14 +4,14 @@
 import 'regenerator-runtime/runtime';
 import { useState, useRef, type ChangeEvent, useEffect } from 'react';
 import Image from 'next/image';
-import { Camera, LoaderCircle, AlertTriangle, HeartPulse, FlaskConical, Volume2, Mic, MicOff, Flower2, Share2, Save, ShoppingCart, TrendingUp, Sparkles, X } from 'lucide-react';
+import { Camera, LoaderCircle, AlertTriangle, HeartPulse, FlaskConical, Volume2, Mic, Flower2, Share2, Save, ShoppingCart, TrendingUp, Sparkles, X } from 'lucide-react';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge, type BadgeProps } from '@/components/ui/badge';
-import { getComprehensiveDiagnosis } from '@/lib/actions';
+import { getComprehensiveDiagnosis, getSpeechFromText } from '@/lib/actions';
 import type { ComprehensiveDiagnosisOutput } from '@/ai/schemas';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/context/LanguageContext';
@@ -37,26 +37,22 @@ export default function DiagnosisTool() {
     browserSupportsSpeechRecognition
   } = useSpeechRecognition({
     commands: [
-        {
-          command: ['upload image', 'select image', 'choose photo'],
-          callback: () => triggerFileSelect()
-        },
-        {
-          command: ['diagnose *', 'check *', 'what is wrong with my *'],
-          callback: (plant) => {
-            toast({ title: `Diagnosing ${plant}...`});
-            handleDiagnose();
-          }
-        },
-        {
-            command: ['clear', 'reset'],
-            callback: () => handleClear()
-        }
-      ]
+      {
+        command: [t('voiceCommandUpload'), t('voiceCommandSelect'), t('voiceCommandChoose')],
+        callback: () => triggerFileSelect()
+      },
+      {
+        command: [t('voiceCommandDiagnose'), t('voiceCommandCheck'), t('voiceCommandWhatsWrong')],
+        callback: () => handleDiagnose()
+      },
+      {
+        command: [t('voiceCommandClear'), t('voiceCommandReset')],
+        callback: () => handleClear()
+      }
+    ]
   });
 
   useEffect(() => {
-    // Reset state when language changes
     handleClear();
   }, [language]);
 
@@ -85,8 +81,9 @@ export default function DiagnosisTool() {
       setImageFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-        handleDiagnose(file, reader.result as string);
+        const dataUri = reader.result as string;
+        setImagePreview(dataUri);
+        handleDiagnose(file, dataUri);
       };
       reader.readAsDataURL(file);
     }
@@ -123,10 +120,57 @@ export default function DiagnosisTool() {
     setImageFile(null);
     setImagePreview(null);
     resetTranscript();
+    if(audioRef.current) audioRef.current.src = "";
     if(fileInputRef.current) fileInputRef.current.value = "";
   }
 
   const triggerFileSelect = () => fileInputRef.current?.click();
+  
+  const handlePlayTTS = async (section: TTSSection) => {
+    if (!result || ttsLoading) return;
+
+    let textToSpeak = '';
+    if (section === 'diagnosis' && result.diagnosis) {
+      textToSpeak = `${t('diagnosisTitle')}. ${result.diagnosis.diseaseIdentification.diseaseName}.`;
+    } else if (section === 'remedies' && result.diagnosis.remedySuggestions) {
+      textToSpeak = result.diagnosis.remedySuggestions.map(r => `${r.name}. ${r.description}`).join(' ');
+    }
+    
+    if (!textToSpeak) return;
+
+    setTtsLoading(section);
+    try {
+        const response = await getSpeechFromText(textToSpeak);
+        if (response.data?.media && audioRef.current) {
+            audioRef.current.src = response.data.media;
+            audioRef.current.play();
+        } else {
+            throw new Error(response.error || 'Failed to get audio');
+        }
+    } catch (e) {
+        console.error(e);
+        toast({
+            variant: 'destructive',
+            title: t('errorTitle'),
+            description: t('unexpectedError'),
+        });
+        setTtsLoading(null);
+    }
+  };
+  
+  const handleShare = () => {
+    if (!result) return;
+    const shareText = `AgriMedic AI Diagnosis:\nDisease: ${result.diagnosis.diseaseIdentification.diseaseName}\n\nRemedies:\n${result.diagnosis.remedySuggestions.map(r => `- ${r.name}: ${r.description}`).join('\n')}`;
+    if (navigator.share) {
+      navigator.share({
+        title: 'AgriMedic AI Diagnosis',
+        text: shareText,
+      }).catch(console.error);
+    } else {
+      navigator.clipboard.writeText(shareText);
+      toast({title: 'Copied to clipboard'});
+    }
+  }
 
   const renderResult = () => {
     if (!result) return null;
@@ -143,32 +187,36 @@ export default function DiagnosisTool() {
     };
     
     return (
-        <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
+        <div className="grid lg:grid-cols-2 gap-6 lg:gap-8">
             <div className="space-y-6">
-                {/* Diagnosis */}
                 <Card className="glass-card">
-                    <CardHeader className="flex-row items-center gap-4 space-y-0">
-                        <HeartPulse className="w-8 h-8 text-primary" />
-                        <CardTitle className="text-2xl">{t('diagnosisTitle')}</CardTitle>
+                    <CardHeader className="flex-row items-start justify-between gap-4 space-y-0">
+                        <div className="flex items-center gap-4">
+                            <HeartPulse className="w-8 h-8 text-primary flex-shrink-0" />
+                            <CardTitle className="text-2xl">{t('diagnosisTitle')}</CardTitle>
+                        </div>
+                        <Button variant="ghost" size="icon" onClick={() => handlePlayTTS('diagnosis')} disabled={!!ttsLoading}>
+                          {ttsLoading === 'diagnosis' ? <LoaderCircle className="w-5 h-5 animate-spin" /> : <Volume2 className="w-5 h-5" />}
+                        </Button>
                     </CardHeader>
                     <CardContent>
-                        {diagnosis.diseaseIdentification.diseaseDetected ? (
-                            <p className="text-lg">{diagnosis.diseaseIdentification.diseaseName}</p>
-                        ) : (
-                            <p className="text-lg">{t('noDiseaseDetectedMessage')}</p>
-                        )}
+                        <p className="text-lg font-semibold">{diagnosis.diseaseIdentification.diseaseName}</p>
                         <Badge variant={diagnosis.diseaseIdentification.diseaseDetected ? "destructive" : "success"} className="mt-2">
                            {diagnosis.diseaseIdentification.diseaseDetected ? t('diseaseDetectedBadge') : t('noDiseaseDetectedBadge')}
                         </Badge>
                     </CardContent>
                 </Card>
 
-                {/* Remedies */}
                 {diagnosis.remedySuggestions && diagnosis.remedySuggestions.length > 0 && (
                     <Card className="glass-card">
-                        <CardHeader className="flex-row items-center gap-4 space-y-0">
-                            <FlaskConical className="w-8 h-8 text-accent" />
-                            <CardTitle className="text-2xl">{t('remedyRecommendationsTitle')}</CardTitle>
+                        <CardHeader className="flex-row items-start justify-between gap-4 space-y-0">
+                           <div className="flex items-center gap-4">
+                             <FlaskConical className="w-8 h-8 text-accent flex-shrink-0" />
+                             <CardTitle className="text-2xl">{t('remedyRecommendationsTitle')}</CardTitle>
+                           </div>
+                           <Button variant="ghost" size="icon" onClick={() => handlePlayTTS('remedies')} disabled={!!ttsLoading}>
+                             {ttsLoading === 'remedies' ? <LoaderCircle className="w-5 h-5 animate-spin" /> : <Volume2 className="w-5 h-5" />}
+                           </Button>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             {diagnosis.remedySuggestions.map((remedy, index) => (
@@ -185,7 +233,6 @@ export default function DiagnosisTool() {
                 )}
             </div>
             <div className="space-y-6">
-                {/* Market Analysis */}
                 {marketAnalysis && (
                     <Card className="glass-card">
                          <CardHeader className="flex-row items-center gap-4 space-y-0">
@@ -199,7 +246,6 @@ export default function DiagnosisTool() {
                         </CardContent>
                     </Card>
                 )}
-                {/* Government Schemes */}
                 {governmentSchemes && governmentSchemes.schemes.length > 0 && (
                     <Card className="glass-card">
                          <CardHeader className="flex-row items-center gap-4 space-y-0">
@@ -216,6 +262,10 @@ export default function DiagnosisTool() {
                         </CardContent>
                     </Card>
                 )}
+                 <div className="flex items-center gap-2">
+                    <Button onClick={handleShare} className="w-full" variant="outline"><Share2 className="mr-2 h-4 w-4"/> {t('shareButton')}</Button>
+                    <Button className="w-full" variant="outline"><Save className="mr-2 h-4 w-4"/> {t('saveButton')}</Button>
+                 </div>
             </div>
         </div>
     );
@@ -280,19 +330,19 @@ export default function DiagnosisTool() {
                     <Button 
                         variant="ghost" 
                         size="icon" 
-                        className="h-20 w-20 rounded-full"
+                        className={`h-20 w-20 rounded-full transition-all ${listening ? 'bg-destructive/20' : ''}`}
                         onClick={handleMicClick}
                         title={listening ? t('stopListening') : t('startListening')}
                     >
-                        {listening ? 
-                            <MicOff className="h-10 w-10 text-destructive animate-pulse" /> : 
-                            <Mic className="h-10 w-10 text-primary" />
-                        }
+                         <Mic className={`h-10 w-10 text-primary transition-all ${listening ? 'scale-125' : ''}`} />
                     </Button>
                 </div>
-                 <div className='w-full md:w-auto'>
-                    {listening && <p className="text-sm text-primary animate-pulse text-center mb-2">{t('listening')}</p>}
-                    <p className='text-sm text-muted-foreground text-center md:text-left'>Say "Upload Image" or "Diagnose Tomato Leaf"</p>
+                 <div className='w-full md:w-auto text-center md:text-left'>
+                    {listening ? 
+                        <p className="text-sm text-primary animate-pulse font-semibold">{t('listening')}</p> : 
+                        <p className="text-sm text-muted-foreground">{t('speakNowPrompt')}</p>
+                    }
+                    <p className='text-xs text-muted-foreground/70'>e.g. "{t('voiceCommandDiagnose')}"</p>
                  </div>
             </div>
         </CardContent>

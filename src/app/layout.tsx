@@ -1,20 +1,21 @@
 
 import type {Metadata} from 'next';
-import { PT_Sans } from 'next/font/google';
+import { Poppins } from 'next/font/google';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 import { LanguageProvider } from '@/context/LanguageContext';
 import { ThemeProvider } from '@/components/ThemeProvider';
 
-const ptSans = PT_Sans({ 
+const poppins = Poppins({ 
   subsets: ['latin'], 
-  weight: ['400', '700'],
-  variable: '--font-pt-sans' 
+  weight: ['400', '600', '700'],
+  variable: '--font-poppins' 
 });
 
 export const metadata: Metadata = {
   title: 'AgriMedic AI',
   description: 'Your AI Plant Doctor. Snap a photo, get a diagnosis.',
+  manifest: '/manifest.json',
 };
 
 export default function RootLayout({
@@ -24,7 +25,24 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${ptSans.variable} font-sans antialiased`}>
+       <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                  navigator.serviceWorker.register('/sw.js').then(registration => {
+                    console.log('SW registered: ', registration);
+                  }).catch(registrationError => {
+                    console.log('SW registration failed: ', registrationError);
+                  });
+                });
+              }
+            `,
+          }}
+        />
+      </head>
+      <body className={`${poppins.variable} font-sans antialiased`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

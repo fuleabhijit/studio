@@ -5,27 +5,27 @@
 
 @layer base {
   :root {
-    --background: 220 20% 97%;
+    --background: 48 33% 94%; /* Light Beige */
     --foreground: 222 47% 11%;
-    --card: 220 20% 97%;
+    --card: 48 33% 94%;
     --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
-    --primary: 84 78% 44%; /* Earthy Green */
-    --primary-foreground: 210 40% 98%;
+    --primary: 84 39% 48%; /* Earthy Green #6B8E23 */
+    --primary-foreground: 355 92% 96%;
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222 47% 11%;
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 45 93% 47%; /* Muted Gold */
-    --accent-foreground: 222 47% 11%;
+    --accent: 43 74% 49%; /* Muted Gold #B8860B */
+    --accent-foreground: 355 92% 96%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
     --success: 142 76% 36%;
     --success-foreground: 210 40% 98%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 84 78% 44%;
+    --ring: 84 39% 48%;
     --radius: 0.75rem;
 
     /* Glassmorphism variables */
@@ -41,13 +41,13 @@
     --card-foreground: 210 40% 98%;
     --popover: 222 47% 11%;
     --popover-foreground: 210 40% 98%;
-    --primary: 84 70% 54%;
+    --primary: 84 39% 58%;
     --primary-foreground: 222 47% 11%;
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
-    --accent: 45 83% 57%;
+    --accent: 43 74% 59%;
     --accent-foreground: 222 47% 11%;
     --destructive: 0 62.8% 50.6%;
     --destructive-foreground: 210 40% 98%;
@@ -55,7 +55,7 @@
     --success-foreground: 222 47% 11%;
     --border: 217.2 32.6% 22.5%;
     --input: 217.2 32.6% 22.5%;
-    --ring: 84 70% 54%;
+    --ring: 84 39% 58%;
 
     /* Glassmorphism variables */
     --glass-bg: rgba(25, 28, 43, 0.6);
