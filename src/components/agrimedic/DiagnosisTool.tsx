@@ -4,19 +4,43 @@
 import 'regenerator-runtime/runtime';
 import { useState, useRef, type ChangeEvent, useEffect } from 'react';
 import Image from 'next/image';
-import { Camera, LoaderCircle, AlertTriangle, HeartPulse, FlaskConical, Volume2, Mic, Flower2, Share2, Save, ShoppingCart, TrendingUp, Sparkles, X } from 'lucide-react';
+import { Camera, LoaderCircle, AlertTriangle, HeartPulse, FlaskConical, Volume2, Mic, Flower2, Share2, Save, ShoppingCart, TrendingUp, Sparkles, X, RotateCcw } from 'lucide-react';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
+import { useRouter } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge, type BadgeProps } from '@/components/ui/badge';
-import { getComprehensiveDiagnosis, getSpeechFromText } from '@/lib/actions';
+import { getComprehensiveDiagnosis, getSpeechFromText, getMarketPriceAlert } from '@/lib/actions';
 import type { ComprehensiveDiagnosisOutput } from '@/ai/schemas';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/context/LanguageContext';
+import { IndianStates } from '@/lib/indian-states';
 
 type TTSSection = 'diagnosis' | 'remedies';
+
+const extractCropName = (text: string): string | null => {
+  const cropKeywords = ["tomato", "potato", "wheat", "onion", "rice", "cotton", "sugarcane", "maize"];
+  const lowerText = text.toLowerCase();
+  for (const crop of cropKeywords) {
+    if (lowerText.includes(crop)) {
+      return crop.charAt(0).toUpperCase() + crop.slice(1);
+    }
+  }
+  return null;
+}
+
+const extractStateName = (text: string): string | null => {
+    const lowerText = text.toLowerCase();
+    for (const state of IndianStates) {
+        if (lowerText.includes(state.toLowerCase())) {
+            return state;
+        }
+    }
+    return null;
+}
+
 
 export default function DiagnosisTool() {
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -29,6 +53,9 @@ export default function DiagnosisTool() {
   const { t, language } = useLanguage();
   const [ttsLoading, setTtsLoading] = useState<TTSSection | null>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
+  const [lastAudioSrc, setLastAudioSrc] = useState<string | null>(null);
+  const router = useRouter();
+
 
   const {
     transcript,
@@ -42,15 +69,33 @@ export default function DiagnosisTool() {
         callback: () => triggerFileSelect()
       },
       {
-        command: [t('voiceCommandDiagnose'), t('voiceCommandCheck'), t('voiceCommandWhatsWrong')],
+        command: t('voiceCommandDiagnose'),
         callback: () => handleDiagnose()
       },
       {
         command: [t('voiceCommandClear'), t('voiceCommandReset')],
         callback: () => handleClear()
+      },
+      {
+        command: t('voiceCommandCheckPrice'),
+        callback: (command) => handleVoicePriceCheck(command),
       }
     ]
   });
+
+  const handleVoicePriceCheck = async (command: string) => {
+    const crop = extractCropName(command);
+    if (crop) {
+        router.push(`/prices?crop=${crop}`);
+    } else {
+        toast({
+            variant: 'destructive',
+            title: t('errorTitle'),
+            description: t('cropNotRecognizedError'),
+        });
+    }
+  };
+
 
   useEffect(() => {
     handleClear();
@@ -120,6 +165,7 @@ export default function DiagnosisTool() {
     setImageFile(null);
     setImagePreview(null);
     resetTranscript();
+    setLastAudioSrc(null);
     if(audioRef.current) audioRef.current.src = "";
     if(fileInputRef.current) fileInputRef.current.value = "";
   }
@@ -142,6 +188,7 @@ export default function DiagnosisTool() {
     try {
         const response = await getSpeechFromText(textToSpeak);
         if (response.data?.media && audioRef.current) {
+            setLastAudioSrc(response.data.media);
             audioRef.current.src = response.data.media;
             audioRef.current.play();
         } else {
@@ -158,6 +205,13 @@ export default function DiagnosisTool() {
     }
   };
   
+  const handleRepeatTTS = () => {
+    if (lastAudioSrc && audioRef.current) {
+      audioRef.current.src = lastAudioSrc;
+      audioRef.current.play();
+    }
+  };
+
   const handleShare = () => {
     if (!result) return;
     const shareText = `AgriMedic AI Diagnosis:\nDisease: ${result.diagnosis.diseaseIdentification.diseaseName}\n\nRemedies:\n${result.diagnosis.remedySuggestions.map(r => `- ${r.name}: ${r.description}`).join('\n')}`;
@@ -195,9 +249,16 @@ export default function DiagnosisTool() {
                             <HeartPulse className="w-8 h-8 text-primary flex-shrink-0" />
                             <CardTitle className="text-2xl">{t('diagnosisTitle')}</CardTitle>
                         </div>
-                        <Button variant="ghost" size="icon" onClick={() => handlePlayTTS('diagnosis')} disabled={!!ttsLoading}>
-                          {ttsLoading === 'diagnosis' ? <LoaderCircle className="w-5 h-5 animate-spin" /> : <Volume2 className="w-5 h-5" />}
-                        </Button>
+                        <div className="flex items-center gap-1">
+                            {lastAudioSrc && (
+                                <Button variant="ghost" size="icon" onClick={handleRepeatTTS} disabled={!!ttsLoading}>
+                                    <RotateCcw className="w-5 h-5" />
+                                </Button>
+                            )}
+                            <Button variant="ghost" size="icon" onClick={() => handlePlayTTS('diagnosis')} disabled={!!ttsLoading}>
+                                {ttsLoading === 'diagnosis' ? <LoaderCircle className="w-5 h-5 animate-spin" /> : <Volume2 className="w-5 h-5" />}
+                            </Button>
+                        </div>
                     </CardHeader>
                     <CardContent>
                         <p className="text-lg font-semibold">{diagnosis.diseaseIdentification.diseaseName}</p>
@@ -289,61 +350,38 @@ export default function DiagnosisTool() {
   );
 
   return (
-    <>
+    <div className="relative pb-24">
       <Card className="max-w-4xl mx-auto mb-8 glass-card">
         <CardContent className="p-4">
-            <div className="flex flex-col md:flex-row items-center gap-4">
-                <div
-                    className="relative w-full md:w-48 h-32 md:h-24 flex-shrink-0 border-2 border-dashed border-border rounded-lg flex items-center justify-center cursor-pointer hover:border-primary hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
-                    onClick={triggerFileSelect}
-                >
-                    {imagePreview ? (
-                        <>
-                            <Image
-                                src={imagePreview}
-                                alt="Plant preview"
-                                layout="fill"
-                                className="object-cover rounded-lg"
-                            />
-                            <Button variant="destructive" size="icon" className="absolute top-1 right-1 h-7 w-7 z-10" onClick={(e) => {e.stopPropagation(); handleClear();}}>
-                                <X className="h-4 w-4"/>
-                            </Button>
-                        </>
-                    ) : (
-                        <div className="text-center text-muted-foreground p-2">
-                            <Camera className="mx-auto h-8 w-8" />
-                            <p className="text-xs mt-1">{t('uploadPrompt')}</p>
-                        </div>
-                    )}
-                    <input
-                        type="file"
-                        ref={fileInputRef}
-                        onChange={handleFileChange}
-                        className="hidden"
-                        accept="image/*"
-                    />
-                </div>
-
-                <div className='text-center text-muted-foreground font-semibold'>OR</div>
-
-                <div className="flex-grow flex items-center justify-center">
-                    <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className={`h-20 w-20 rounded-full transition-all ${listening ? 'bg-destructive/20' : ''}`}
-                        onClick={handleMicClick}
-                        title={listening ? t('stopListening') : t('startListening')}
-                    >
-                         <Mic className={`h-10 w-10 text-primary transition-all ${listening ? 'scale-125' : ''}`} />
-                    </Button>
-                </div>
-                 <div className='w-full md:w-auto text-center md:text-left'>
-                    {listening ? 
-                        <p className="text-sm text-primary animate-pulse font-semibold">{t('listening')}</p> : 
-                        <p className="text-sm text-muted-foreground">{t('speakNowPrompt')}</p>
-                    }
-                    <p className='text-xs text-muted-foreground/70'>e.g. "{t('voiceCommandDiagnose')}"</p>
-                 </div>
+            <div
+                className="relative w-full h-48 flex-shrink-0 border-2 border-dashed border-border rounded-lg flex items-center justify-center cursor-pointer hover:border-primary hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+                onClick={triggerFileSelect}
+            >
+                {imagePreview ? (
+                    <>
+                        <Image
+                            src={imagePreview}
+                            alt="Plant preview"
+                            fill
+                            className="object-cover rounded-lg"
+                        />
+                        <Button variant="destructive" size="icon" className="absolute top-1 right-1 h-7 w-7 z-10" onClick={(e) => {e.stopPropagation(); handleClear();}}>
+                            <X className="h-4 w-4"/>
+                        </Button>
+                    </>
+                ) : (
+                    <div className="text-center text-muted-foreground p-2">
+                        <Camera className="mx-auto h-12 w-12" />
+                        <p className="text-sm mt-2 font-semibold">{t('uploadPrompt')}</p>
+                    </div>
+                )}
+                <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    className="hidden"
+                    accept="image/*"
+                />
             </div>
         </CardContent>
       </Card>
@@ -358,7 +396,22 @@ export default function DiagnosisTool() {
           )}
           {isLoading ? renderLoading() : result ? renderResult() : renderPlaceholder()}
       </div>
+      
+      <div className="fixed bottom-6 right-6 z-50">
+        <Button 
+            size="icon" 
+            className={`h-16 w-16 rounded-full shadow-lg transition-all transform hover:scale-110 ${listening ? 'bg-destructive/80' : 'bg-primary'}`}
+            onClick={handleMicClick}
+            title={listening ? t('stopListening') : t('startListening')}
+        >
+                <Mic className={`h-8 w-8 text-primary-foreground transition-all ${listening ? 'scale-125' : ''}`} />
+        </Button>
+        {listening && <p className="fixed bottom-24 right-6 text-sm bg-background/80 px-2 py-1 rounded-md shadow-lg">{t('listening')}</p>}
+      </div>
+
       <audio ref={audioRef} className="hidden" onEnded={() => setTtsLoading(null)} />
-    </>
+    </div>
   );
 }
+
+    

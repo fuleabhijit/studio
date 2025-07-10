@@ -2,7 +2,7 @@
 "use client";
 
 import 'regenerator-runtime/runtime';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -23,6 +23,7 @@ import { getGovtSchemes } from '@/lib/actions';
 import type { FindGovtSchemesOutput } from '@/ai/flows/find-govt-schemes';
 import { IndianStates } from '@/lib/indian-states';
 import { LoaderCircle, AlertTriangle, ListChecks, FileText, Sparkles, Mic, ExternalLink } from 'lucide-react';
+import { useGeolocation } from '@/hooks/useGeolocation';
 
 export default function SchemesPage() {
     const { t } = useLanguage();
@@ -30,6 +31,7 @@ export default function SchemesPage() {
     const [error, setError] = useState<string | null>(null);
     const [result, setResult] = useState<FindGovtSchemesOutput | null>(null);
     const resultsRef = useRef<HTMLDivElement>(null);
+    const { state: geoState } = useGeolocation();
 
     const formSchema = z.object({
         state: z.string().min(1, { message: t('requiredError') }),
@@ -49,6 +51,12 @@ export default function SchemesPage() {
             query: '',
         },
     });
+
+    useEffect(() => {
+        if (geoState) {
+            form.setValue('state', geoState);
+        }
+    }, [geoState, form]);
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         setIsLoading(true);
@@ -100,7 +108,7 @@ export default function SchemesPage() {
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel>{t('stateLabel')}</FormLabel>
-                                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                <Select onValueChange={field.onChange} value={field.value} defaultValue={field.value}>
                                                     <FormControl>
                                                         <SelectTrigger className="bg-background/50">
                                                             <SelectValue placeholder={t('statePlaceholder')} />
@@ -180,16 +188,6 @@ export default function SchemesPage() {
                                                         rows={3}
                                                         {...field}
                                                     />
-                                                    <Button 
-                                                        type="button"
-                                                        variant="ghost" 
-                                                        size="icon" 
-                                                        className="absolute right-2 top-1/2 -translate-y-1/2"
-                                                        title={t('startListening')}
-                                                    >
-                                                        <Mic className="h-5 w-5" />
-                                                        <span className="sr-only">{t('startListening')}</span>
-                                                    </Button>
                                                 </div>
                                                 </FormControl>
                                             <FormMessage />
@@ -285,3 +283,5 @@ export default function SchemesPage() {
         </div>
     );
 }
+
+    

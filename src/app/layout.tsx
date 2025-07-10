@@ -5,6 +5,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 import { LanguageProvider } from '@/context/LanguageContext';
 import { ThemeProvider } from '@/components/ThemeProvider';
+import { GeolocationProvider } from '@/context/GeolocationContext';
 
 const poppins = Poppins({ 
   subsets: ['latin'], 
@@ -50,11 +51,15 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <LanguageProvider>
-            {children}
-            <Toaster />
+            <GeolocationProvider>
+              {children}
+              <Toaster />
+            </GeolocationProvider>
           </LanguageProvider>
         </ThemeProvider>
       </body>
     </html>
   );
 }
+
+    

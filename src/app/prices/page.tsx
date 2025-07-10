@@ -1,7 +1,8 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Header from '@/components/agrimedic/Header';
 import Footer from '@/components/agrimedic/Footer';
 import { Button } from '@/components/ui/button';
@@ -16,10 +17,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 const availableCrops = ["Tomato", "Onion", "Potato", "Wheat"];
 
 export default function PricesPage() {
+    const searchParams = useSearchParams();
+    const cropFromURL = searchParams.get('crop');
+
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [result, setResult] = useState<PriceAlert | null>(null);
-    const [selectedCrop, setSelectedCrop] = useState<string>('');
+    const [selectedCrop, setSelectedCrop] = useState<string>(cropFromURL || '');
 
     const handleFetchPrices = async () => {
         if (!selectedCrop) {
@@ -41,6 +45,15 @@ export default function PricesPage() {
         }
         setIsLoading(false);
     };
+
+    useEffect(() => {
+        if(cropFromURL) {
+            setSelectedCrop(cropFromURL);
+            handleFetchPrices();
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [cropFromURL]);
+
 
     return (
         <div className="flex flex-col min-h-screen bg-background bg-grid-black/[0.05] dark:bg-grid-white/[0.05]">
@@ -124,3 +137,5 @@ export default function PricesPage() {
         </div>
     );
 }
+
+    

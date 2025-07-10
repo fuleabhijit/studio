@@ -37,6 +37,7 @@ export type TranslationKeys = {
   voiceCommandSelect: string;
   voiceCommandChoose: string;
   voiceCommandDiagnose: string;
+  voiceCommandCheckPrice: string;
   voiceCommandCheck: string;
   voiceCommandWhatsWrong: string;
   voiceCommandClear: string;
@@ -79,6 +80,7 @@ export type TranslationKeys = {
   // Errors & Toasts
   selectImageError: string;
   unexpectedError: string;
+  cropNotRecognizedError: string;
   speechRecognitionNotSupported: string;
   language: string;
   english: string;
@@ -109,7 +111,7 @@ const englishTranslations: TranslationKeys = {
   heroTitle: 'Your AI Plant Doctor',
   heroSubtitle: 'Snap a photo, get a diagnosis. Simple, fast, and for every farmer.',
   uploadTitle: 'Upload a Photo of Your Plant',
-  uploadPrompt: 'Click or Tap to Upload',
+  uploadPrompt: 'Click or Tap to Upload a Photo',
   diagnoseButton: 'Diagnose Plant',
   diagnosingButton: 'Checking your plant’s health...',
   placeholderTitle: 'Your Plant Doctor',
@@ -125,7 +127,8 @@ const englishTranslations: TranslationKeys = {
   voiceCommandUpload: 'upload image',
   voiceCommandSelect: 'select image',
   voiceCommandChoose: 'choose photo',
-  voiceCommandDiagnose: 'diagnose plant',
+  voiceCommandDiagnose: 'diagnose',
+  voiceCommandCheckPrice: 'price of',
   voiceCommandCheck: 'check plant',
   voiceCommandWhatsWrong: 'what is wrong with my crop',
   voiceCommandClear: 'clear',
@@ -161,6 +164,7 @@ const englishTranslations: TranslationKeys = {
   queryMinLengthError: 'Please describe your need in a few more words.',
   selectImageError: 'Please select an image first.',
   unexpectedError: 'An unexpected error occurred. Please try again.',
+  cropNotRecognizedError: 'Could not recognize the crop name in your query. Please try again.',
   speechRecognitionNotSupported: 'Speech recognition is not supported by your browser.',
   language: 'Language',
   english: 'English',
@@ -189,7 +193,7 @@ export const translations: Translations = {
     footerTagline: 'किसानों को एआई तकनीक से सशक्त बनाना।',
     heroTitle: 'आपका एआई प्लांट डॉक्टर',
     heroSubtitle: 'एक तस्वीर खींचो, निदान पाओ। सरल, तेज, और हर किसान के लिए।',
-    uploadPrompt: 'अपलोड करने के लिए क्लिक करें या टैप करें',
+    uploadPrompt: 'फोटो अपलोड करने के लिए क्लिक करें या टैप करें',
     diagnosingButton: 'आपके पौधे के स्वास्थ्य की जांच हो रही है...',
     placeholderTitle: 'आपका पौधा डॉक्टर',
     placeholderDescription: 'हमारे AI सहायक से त्वरित और सटीक निदान पाने के लिए अपने पौधे की एक तस्वीर अपलोड करें।',
@@ -201,7 +205,8 @@ export const translations: Translations = {
     remedyRecommendationsTitle: 'उपचार की सिफारिशें',
     governmentSchemesTitle: 'सरकारी योजनाएं',
     speakNowPrompt: 'या, बोलने के लिए माइक पर टैप करें',
-    voiceCommandDiagnose: 'पौधे का निदान करें',
+    voiceCommandDiagnose: 'निदान',
+    voiceCommandCheckPrice: 'का भाव',
     voiceCommandCheck: 'पौधा जांचें',
     voiceCommandWhatsWrong: 'मेरी फसल में क्या खराबी है',
     voiceCommandClear: 'हटाएं',
@@ -211,6 +216,7 @@ export const translations: Translations = {
     listening: 'सुन रहा है...',
     selectImageError: 'कृपया पहले एक छवि चुनें।',
     unexpectedError: 'एक अप्रत्याशित त्रुटि हुई। कृपया पुन: प्रयास करें।',
+    cropNotRecognizedError: 'आपकी क्वेरी में फसल का नाम नहीं पहचान सका। कृपया पुन: प्रयास करें।',
     language: 'भाषा',
     hindi: 'हिंदी',
     schemesPageTitle: 'सरकारी योजनाएं खोजें',
@@ -240,7 +246,7 @@ export const translations: Translations = {
     footerTagline: 'शेतकऱ्यांना एआय तंत्रज्ञानाने सक्षम करणे.',
     heroTitle: 'तुमचा एआय वनस्पती डॉक्टर',
     heroSubtitle: 'एक फोटो स्नॅप करा, निदान मिळवा. सोपे, जलद आणि प्रत्येक शेतकऱ्यासाठी.',
-    uploadPrompt: 'अपलोड करण्यासाठी क्लिक करा किंवा टॅप करा',
+    uploadPrompt: 'फोटो अपलोड करण्यासाठी क्लिक करा किंवा टॅप करा',
     diagnosingButton: 'तुमच्या वनस्पतीच्या आरोग्याची तपासणी करत आहे...',
     placeholderTitle: 'तुमचा वनस्पती डॉक्टर',
     placeholderDescription: 'आमच्या AI सहाय्यकाकडून जलद आणि अचूक निदान मिळवण्यासाठी तुमच्या वनस्पनाचा फोटो अपलोड करा.',
@@ -252,7 +258,8 @@ export const translations: Translations = {
     remedyRecommendationsTitle: 'उपाय सूचना',
     governmentSchemesTitle: 'सरकारी योजना',
     speakNowPrompt: 'किंवा, बोलण्यासाठी माइकवर टॅप करा',
-    voiceCommandDiagnose: 'वनस्पतीचे निदान करा',
+    voiceCommandDiagnose: 'निदान',
+    voiceCommandCheckPrice: 'ची किंમત',
     voiceCommandCheck: 'वनस्पती तपासा',
     voiceCommandWhatsWrong: 'माझ्या पिकात काय चूक आहे',
     startListening: 'ऐकण्यास प्रारंभ करा',
@@ -260,6 +267,7 @@ export const translations: Translations = {
     listening: 'ऐकत आहे...',
     selectImageError: 'कृपया प्रथम एक प्रतिमा निवडा.',
     unexpectedError: 'एक अनपेक्षित त्रुटी आली. कृपया पुन्हा प्रयत्न करा.',
+    cropNotRecognizedError: 'तुमच्या प्रश्नातील पिकाचे नाव ओळखू शकलो नाही. कृपया पुन्हा प्रयत्न करा.',
     language: 'भाषा',
     marathi: 'मराठी',
     schemesPageTitle: 'सरकारी योजना शोधा',
@@ -351,3 +359,5 @@ export const translations: Translations = {
     listening: 'കേൾക്കുന്നു...',
   },
 };
+
+    
