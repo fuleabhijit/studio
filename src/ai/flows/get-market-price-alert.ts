@@ -85,3 +85,4 @@ const getMarketPriceAlertFlow = ai.defineFlow(
 export async function getMarketPriceAlertFlowWrapper(): Promise<PriceAlert> {
     return getMarketPriceAlertFlow();
 }
+
