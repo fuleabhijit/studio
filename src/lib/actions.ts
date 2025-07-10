@@ -39,11 +39,13 @@ const languageMap: Record<Language, string> = {
     bn: 'Bengali',
     ta: 'Tamil',
     gu: 'Gujarati',
+    kn: 'Kannada',
+    ml: 'Malayalam',
 };
 
 const TranslationActionInputSchema = z.object({
     diagnosis: AnalyzeCropImageOutputSchema,
-    targetLanguage: z.enum(['en', 'hi', 'mr', 'te', 'bn', 'ta', 'gu']),
+    targetLanguage: z.enum(['en', 'hi', 'mr', 'te', 'bn', 'ta', 'gu', 'kn', 'ml']),
 });
 
 export async function getTranslatedDiagnosis(

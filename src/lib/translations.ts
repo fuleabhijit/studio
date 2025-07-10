@@ -1,5 +1,5 @@
 
-export type Language = 'en' | 'hi' | 'mr' | 'te' | 'bn' | 'ta' | 'gu';
+export type Language = 'en' | 'hi' | 'mr' | 'te' | 'bn' | 'ta' | 'gu' | 'kn' | 'ml';
 
 export type TranslationKeys = {
   // Header
@@ -94,6 +94,8 @@ export type TranslationKeys = {
   bengali: string;
   tamil: string;
   gujarati: string;
+  kannada: string;
+  malayalam: string;
 };
 
 export type Translations = {
@@ -181,6 +183,8 @@ const englishTranslations: TranslationKeys = {
   bengali: 'Bengali',
   tamil: 'Tamil',
   gujarati: 'Gujarati',
+  kannada: 'Kannada',
+  malayalam: 'Malayalam',
 };
 
 export const translations: Translations = {
@@ -328,5 +332,15 @@ export const translations: Translations = {
     diagnosingButton: 'તમારા છોડના સ્વાસ્થ્યની તપાસ કરી રહ્યું છે...',
     describeIssueLabel: 'અથવા, સમસ્યાનું વર્ણન કરો (વૈકલ્પિક)',
     listening: 'સાંભળી રહ્યું છે...',
+  },
+  kn: {
+    ...englishTranslations,
+    language: 'ಭಾಷೆ',
+    kannada: 'ಕನ್ನಡ',
+  },
+  ml: {
+    ...englishTranslations,
+    language: 'ഭാഷ',
+    malayalam: 'മലയാളം',
   },
 };

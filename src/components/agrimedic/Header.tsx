@@ -33,7 +33,7 @@ export default function Header() {
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Link href="/" className="flex items-center gap-3">
-            <h1 className="text-2xl lg:text-3xl font-bold font-headline">{t('appTitle')}</h1>
+            <h1 className="text-2xl lg:text-3xl font-bold font-headline">AgriMedic AI</h1>
           </Link>
         </div>
         
@@ -63,7 +63,7 @@ export default function Header() {
                   <div className="flex h-full flex-col">
                     <div className="p-6 border-b">
                        <Link href="/" className="flex items-center gap-3" onClick={() => setIsSheetOpen(false)}>
-                          <h1 className="text-2xl font-bold font-headline text-foreground">{t('appTitle')}</h1>
+                          <h1 className="text-2xl font-bold font-headline text-foreground">AgriMedic AI</h1>
                         </Link>
                     </div>
                     <nav className="flex-grow p-4 space-y-2">
@@ -88,10 +88,12 @@ export default function Header() {
                             <LanguageButton lang="en" label={t('english')} />
                             <LanguageButton lang="hi" label={t('hindi')} />
                             <LanguageButton lang="mr" label={t('marathi')} />
-                            <LanguageButton lang="te" label={t('telugu')} />
                             <LanguageButton lang="bn" label={t('bengali')} />
-                            <LanguageButton lang="ta" label={t('tamil')} />
                             <LanguageButton lang="gu" label={t('gujarati')} />
+                            <LanguageButton lang="ta" label={t('tamil')} />
+                            <LanguageButton lang="te" label={t('telugu')} />
+                            <LanguageButton lang="kn" label={t('kannada')} />
+                            <LanguageButton lang="ml" label={t('malayalam')} />
                         </div>
                     </div>
                   </div>
@@ -118,16 +120,18 @@ function LanguageDropdown() {
           <DropdownMenuItem onClick={() => setLanguage('en')} disabled={language === 'en'}> {t('english')} </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setLanguage('hi')} disabled={language === 'hi'}> {t('hindi')} </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setLanguage('mr')} disabled={language === 'mr'}> {t('marathi')} </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setLanguage('te')} disabled={language === 'te'}> {t('telugu')} </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setLanguage('bn')} disabled={language === 'bn'}> {t('bengali')} </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setLanguage('ta')} disabled={language === 'ta'}> {t('tamil')} </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setLanguage('gu')} disabled={language === 'gu'}> {t('gujarati')} </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setLanguage('ta')} disabled={language === 'ta'}> {t('tamil')} </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setLanguage('te')} disabled={language === 'te'}> {t('telugu')} </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setLanguage('kn')} disabled={language === 'kn'}> {t('kannada')} </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setLanguage('ml')} disabled={language === 'ml'}> {t('malayalam')} </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
 }
 
-function LanguageButton({ lang, label }: { lang: 'en' | 'hi' | 'mr' | 'te' | 'bn' | 'ta' | 'gu', label: string }) {
+function LanguageButton({ lang, label }: { lang: 'en' | 'hi' | 'mr' | 'te' | 'bn' | 'ta' | 'gu' | 'kn' | 'ml', label: string }) {
     const { setLanguage, language } = useLanguage();
     return (
         <Button onClick={() => setLanguage(lang)} variant={language === lang ? 'default' : 'outline'} className="w-full justify-center">

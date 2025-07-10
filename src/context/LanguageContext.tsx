@@ -16,7 +16,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguage] = useState<Language>('en');
 
   const t = useCallback((key: keyof TranslationKeys): string => {
-    return translations[language][key] || translations['en'][key];
+    return translations[language]?.[key] || translations['en'][key];
   }, [language]);
   
   const value = useMemo(() => ({ language, setLanguage, t }), [language, t]);
