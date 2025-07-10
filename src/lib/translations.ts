@@ -5,10 +5,16 @@ export type TranslationKeys = {
   // Header
   appTitle: string;
   appDescription: string;
+  pricesNavTitle: string;
+  schemesNavTitle: string;
   
   // Footer
   footerCopyright: string;
   footerTagline: string;
+
+  // Hero Section
+  heroTitle: string;
+  heroSubtitle: string;
 
   // Greeting
   greeting: string;
@@ -47,7 +53,6 @@ export type TranslationKeys = {
   listening: string;
 
   // Schemes Page
-  schemesNavTitle: string;
   schemesPageTitle: string;
   schemesPageDescription: string;
   eligibilityFormTitle: string;
@@ -105,8 +110,12 @@ export type Translations = {
 const englishTranslations: TranslationKeys = {
   appTitle: 'AgriMedic AI',
   appDescription: 'Diagnose Crop Diseases Instantly',
+  pricesNavTitle: 'Market Prices',
+  schemesNavTitle: 'Govt. Schemes',
   footerCopyright: `© {year} AgriMedic AI. All rights reserved.`,
   footerTagline: 'Empowering farmers with AI technology.',
+  heroTitle: 'Your AI Plant Doctor',
+  heroSubtitle: 'Snap a photo, get a diagnosis. Simple, fast, and for every farmer.',
   greeting: 'Hello Farmer! Let’s care for your crops today!',
   uploadTitle: 'Upload a Photo of Your Plant',
   uploadPrompt: 'Click or drag a photo here',
@@ -139,7 +148,6 @@ const englishTranslations: TranslationKeys = {
   startListening: 'Start Listening',
   stopListening: 'Stop Listening',
   listening: 'Listening...',
-  schemesNavTitle: 'Govt. Schemes',
   schemesPageTitle: 'Find Government Schemes',
   schemesPageDescription: 'Enter your details below to find agricultural schemes you might be eligible for.',
   eligibilityFormTitle: 'Your Profile',
@@ -193,8 +201,12 @@ export const translations: Translations = {
     ...englishTranslations,
     appTitle: 'एग्रीमेडिक एआई',
     appDescription: 'फसल रोगों का तुरंत निदान करें',
+    pricesNavTitle: 'बाजार मूल्य',
+    schemesNavTitle: 'सरकारी योजनाएं',
     footerCopyright: '© {year} एग्रीमेडिक एआई। सर्वाधिकार सुरक्षित।',
     footerTagline: 'किसानों को एआई तकनीक से सशक्त बनाना।',
+    heroTitle: 'आपका एआई प्लांट डॉक्टर',
+    heroSubtitle: 'एक तस्वीर खींचो, निदान पाओ। सरल, तेज, और हर किसान के लिए।',
     greeting: 'नमस्ते किसान! चलिए आज आपकी फसलों की देखभाल करें!',
     uploadTitle: 'अपने पौधे की एक तस्वीर अपलोड करें',
     uploadPrompt: 'यहां एक फोटो क्लिक करें या खींचें',
@@ -220,7 +232,6 @@ export const translations: Translations = {
     unexpectedError: 'एक अप्रत्याशित त्रुटि हुई। कृपया पुन: प्रयास करें।',
     language: 'भाषा',
     hindi: 'हिंदी',
-    schemesNavTitle: 'सरकारी योजनाएं',
     schemesPageTitle: 'सरकारी योजनाएं खोजें',
     schemesPageDescription: 'आप जिन कृषि योजनाओं के लिए पात्र हो सकते हैं, उन्हें खोजने के लिए नीचे अपना विवरण दर्ज करें।',
     eligibilityFormTitle: 'आपकी प्रोफाइल',
@@ -243,8 +254,12 @@ export const translations: Translations = {
     ...englishTranslations,
     appTitle: 'अ‍ॅग्रीमेडिक एआय',
     appDescription: 'पीक रोगांचे त्वरित निदान करा',
+    pricesNavTitle: 'बाजारभाव',
+    schemesNavTitle: 'शासकीय योजना',
     footerCopyright: '© {year} अ‍ॅग्रीमेडिक एआय. सर्व हक्क राखीव.',
     footerTagline: 'शेतकऱ्यांना एआय तंत्रज्ञानाने सक्षम करणे.',
+    heroTitle: 'तुमचा एआय वनस्पती डॉक्टर',
+    heroSubtitle: 'एक फोटो स्नॅप करा, निदान मिळवा. सोपे, जलद आणि प्रत्येक शेतकऱ्यासाठी.',
     greeting: 'नमस्कार शेतकरी! चला आज तुमच्या पिकांची काळजी घेऊया!',
     uploadTitle: 'तुमच्या वनस्पतीचा फोटो अपलोड करा',
     uploadPrompt: 'येथे फोटो क्लिक करा किंवा ड्रॅग करा',
@@ -270,7 +285,6 @@ export const translations: Translations = {
     unexpectedError: 'एक अनपेक्षित त्रुटी आली. कृपया पुन्हा प्रयत्न करा.',
     language: 'भाषा',
     marathi: 'मराठी',
-    schemesNavTitle: 'शासकीय योजना',
     schemesPageTitle: 'सरकारी योजना शोधा',
     schemesPageDescription: 'तुम्ही पात्र असलेल्या कृषी योजना शोधण्यासाठी खाली तुमचे तपशील प्रविष्ट करा.',
     eligibilityFormTitle: 'तुमची प्रोफाइल',
@@ -294,6 +308,10 @@ export const translations: Translations = {
     language: 'భాష',
     telugu: 'తెలుగు',
     appTitle: 'అగ్రిమెడిక్ AI',
+    pricesNavTitle: 'మార్కెట్ ధరలు',
+    schemesNavTitle: 'ప్రభుత్వ పథకాలు',
+    heroTitle: 'మీ AI మొక్కల డాక్టర్',
+    heroSubtitle: 'ఒక ఫోటో తీయండి, ఒక రోగ నిర్ధారణ పొందండి. సులభమైన, వేగవంతమైనది మరియు ప్రతి రైతు కోసం.',
     greeting: 'నమస్కారం రైతు! ఈ రోజు మీ పంటలను చూసుకుందాం!',
     uploadTitle: 'మీ మొక్క యొక్క ఫోటోను అప్‌లోడ్ చేయండి',
     diagnosingButton: 'మీ మొక్క ఆరోగ్యాన్ని తనిఖీ చేస్తోంది...',
@@ -305,6 +323,10 @@ export const translations: Translations = {
     language: 'ভাষা',
     bengali: 'বাংলা',
     appTitle: 'এগ্রিমেডিক এআই',
+    pricesNavTitle: 'বাজার দর',
+    schemesNavTitle: 'সরকারি প্রকল্প',
+    heroTitle: 'আপনার এআই প্ল্যান্ট ডাক্তার',
+    heroSubtitle: 'একটি ছবি তুলুন, একটি রোগ নির্ণয় করুন। সহজ, দ্রুত এবং প্রতিটি কৃষকের জন্য।',
     greeting: 'নমস্কার কৃষক! আসুন আজ আপনার ফসলের যত্ন নেওয়া যাক!',
     uploadTitle: 'আপনার গাছের একটি ছবি আপলোড করুন',
     diagnosingButton: 'আপনার গাছের স্বাস্থ্য পরীক্ষা করা হচ্ছে...',
@@ -316,6 +338,10 @@ export const translations: Translations = {
     language: 'மொழி',
     tamil: 'தமிழ்',
     appTitle: 'அக்ரிமெடிக் AI',
+    pricesNavTitle: 'சந்தை விலைகள்',
+    schemesNavTitle: 'அரசு திட்டங்கள்',
+    heroTitle: 'உங்கள் AI தாவர மருத்துவர்',
+    heroSubtitle: 'ஒரு புகைப்படத்தை எடுங்கள், ஒரு நோயறிதலைப் பெறுங்கள். எளிமையானது, வேகமானது மற்றும் ஒவ்வொரு விவசாயிக்கும்.',
     greeting: 'வணக்கம் விவசாயி! இன்று உங்கள் பயிர்களை கவனிப்போம்!',
     uploadTitle: 'உங்கள் தாவரத்தின் புகைப்படத்தைப் பதிவேற்றவும்',
     diagnosingButton: 'உங்கள் தாவரத்தின் ஆரோக்கியத்தைச் சரிபார்க்கிறது...',
@@ -327,6 +353,10 @@ export const translations: Translations = {
     language: 'ભાષા',
     gujarati: 'ગુજરાતી',
     appTitle: 'એગ્રીમેડિક એઆઈ',
+    pricesNavTitle: 'બજાર ભાવ',
+    schemesNavTitle: 'સરકારી યોજનાઓ',
+    heroTitle: 'તમારા એઆઈ પ્લાન્ટ ડોક્ટર',
+    heroSubtitle: 'એક ફોટો સ્નેપ કરો, નિદાન મેળવો. સરળ, ઝડપી અને દરેક ખેડૂત માટે.',
     greeting: 'નમસ્તે ખેડૂત! ચાલો આજે તમારા પાકની સંભાળ લઈએ!',
     uploadTitle: 'તમારા છોડનો ફોટો અપલોડ કરો',
     diagnosingButton: 'તમારા છોડના સ્વાસ્થ્યની તપાસ કરી રહ્યું છે...',
@@ -337,10 +367,28 @@ export const translations: Translations = {
     ...englishTranslations,
     language: 'ಭಾಷೆ',
     kannada: 'ಕನ್ನಡ',
+    pricesNavTitle: 'ಮಾರುಕಟ್ಟೆ ಬೆಲೆಗಳು',
+    schemesNavTitle: 'ಸರ್ಕಾರಿ ಯೋಜನೆಗಳು',
+    heroTitle: 'ನಿಮ್ಮ AI ಸಸ್ಯ ವೈದ್ಯ',
+    heroSubtitle: 'ಒಂದು ಫೋಟೋ ತೆಗೆಯಿರಿ, ರೋಗನಿರ್ಣಯವನ್ನು ಪಡೆಯಿರಿ. ಸರಳ, ವೇಗ ಮತ್ತು ಪ್ರತಿಯೊಬ್ಬ ರೈತರಿಗಾಗಿ.',
+    greeting: 'ನಮಸ್ಕಾರ ರೈತ! ಇಂದು ನಿಮ್ಮ ಬೆಳೆಗಳನ್ನು ನೋಡಿಕೊಳ್ಳೋಣ!',
+    uploadTitle: 'ನಿಮ್ಮ ಸಸ್ಯದ ಫೋಟೋವನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಿ',
+    diagnosingButton: 'ನಿಮ್ಮ ಸಸ್ಯದ ಆರೋಗ್ಯವನ್ನು ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ...',
+    describeIssueLabel: 'ಅಥವಾ, ಸಮಸ್ಯೆಯನ್ನು ವಿವರಿಸಿ (ಐಚ್ಛಿಕ)',
+    listening: 'ಕೇಳುತ್ತಿದೆ...',
   },
   ml: {
     ...englishTranslations,
     language: 'ഭാഷ',
     malayalam: 'മലയാളം',
+    pricesNavTitle: 'വിപണി വിലകൾ',
+    schemesNavTitle: 'സർക്കാർ പദ്ധതികൾ',
+    heroTitle: 'നിങ്ങളുടെ AI പ്ലാന്റ് ഡോക്ടർ',
+    heroSubtitle: 'ഒരു ഫോട്ടോ എടുക്കുക, ഒരു രോഗനിർണയം നേടുക. ലളിതവും വേഗതയേറിയതും ഓരോ കർഷകനും.',
+    greeting: 'നമസ്കാരം കർഷകാ! ഇന്ന് നിങ്ങളുടെ വിളകളെ പരിപാലിക്കാം!',
+    uploadTitle: 'നിങ്ങളുടെ ചെടിയുടെ ഫോട്ടോ അപ്‌ലോഡ് ചെയ്യുക',
+    diagnosingButton: 'നിങ്ങളുടെ ചെടിയുടെ ആരോഗ്യം പരിശോധിക്കുന്നു...',
+    describeIssueLabel: 'അല്ലെങ്കിൽ, പ്രശ്നം വിവരിക്കുക (ഓപ്ഷണൽ)',
+    listening: 'കേൾക്കുന്നു...',
   },
 };

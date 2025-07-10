@@ -22,7 +22,7 @@ export default function Header() {
   const pathname = usePathname();
 
   const navLinks = [
-    { href: "/prices", icon: TrendingUp, label: "Market Prices" },
+    { href: "/prices", icon: TrendingUp, label: t('pricesNavTitle') },
     { href: "/schemes", icon: NotebookText, label: t('schemesNavTitle') },
   ];
 
