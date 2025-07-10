@@ -124,13 +124,14 @@ export default function DiagnosisTool() {
                 const translationResponse = await getTranslatedDiagnosis({ diagnosis: diagnosisResponse.data, targetLanguage: language });
                 if (translationResponse.error) {
                     setError(t('unexpectedError'));
-                    setResult(diagnosisResponse.data);
+                    setResult(diagnosisResponse.data); // Show untranslated data on translation failure
                 } else {
                     setResult(translationResponse.data);
                 }
                 setIsLoading(false);
             }
         } else {
+            setError(t('unexpectedError'));
             setIsLoading(false);
         }
     }
