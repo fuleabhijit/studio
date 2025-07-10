@@ -1,127 +1,33 @@
 
 'use server';
 
-import { analyzeCropImage, type AnalyzeCropImageInput, type AnalyzeCropImageOutput } from '@/ai/flows/analyze-crop-image';
+import { diagnosePlant, type ComprehensiveDiagnosisOutput, type ComprehensiveDiagnosisInput } from '@/ai/flows/diagnose-plant-flow';
+import { getMarketPriceAlertFlowWrapper, type PriceAlert } from '@/ai/flows/get-market-price-alert';
 import { findGovtSchemes, type FindGovtSchemesOutput } from '@/ai/flows/find-govt-schemes';
 import { translateText } from '@/ai/flows/translate-text';
 import { textToSpeech } from '@/ai/flows/text-to-speech';
 import { z } from 'zod';
 import type { Language } from './translations';
-import { AnalyzeCropImageOutputSchema, FindGovtSchemesInputSchema } from '@/ai/schemas';
-import { getMarketPriceAlertFlowWrapper, type PriceAlert } from '@/ai/flows/get-market-price-alert';
+import { FindGovtSchemesInputSchema } from '@/ai/schemas';
 
-const ActionInputSchema = z.object({
+const DiagnosisInputSchema = z.object({
   photoDataUri: z.string(),
-  description: z.string().optional(),
+  language: z.string(),
 });
 
-export async function getDiagnosis(
-  input: AnalyzeCropImageInput
-): Promise<{ data?: AnalyzeCropImageOutput; error?: string }> {
+export async function getComprehensiveDiagnosis(
+  input: z.infer<typeof DiagnosisInputSchema>
+): Promise<{ data?: ComprehensiveDiagnosisOutput; error?: string }> {
   try {
-    const validatedInput = ActionInputSchema.parse(input);
-    const result = await analyzeCropImage(validatedInput);
+    const validatedInput = DiagnosisInputSchema.parse(input);
+    const result = await diagnosePlant(validatedInput);
     return { data: result };
   } catch (error) {
-    console.error('Error in getDiagnosis action:', error);
+    console.error('Error in getComprehensiveDiagnosis action:', error);
     if (error instanceof z.ZodError) {
         return { error: 'Invalid input provided.' };
     }
     return { error: 'An unexpected error occurred while analyzing the image. Please try again.' };
-  }
-}
-
-const languageMap: Record<Language, string> = {
-    en: 'English',
-    hi: 'Hindi',
-    mr: 'Marathi',
-    te: 'Telugu',
-    bn: 'Bengali',
-    ta: 'Tamil',
-    gu: 'Gujarati',
-    kn: 'Kannada',
-    ml: 'Malayalam',
-};
-
-const TranslationActionInputSchema = z.object({
-    diagnosis: AnalyzeCropImageOutputSchema,
-    targetLanguage: z.enum(['en', 'hi', 'mr', 'te', 'bn', 'ta', 'gu', 'kn', 'ml']),
-});
-
-export async function getTranslatedDiagnosis(
-  input: { diagnosis: AnalyzeCropImageOutput; targetLanguage: Language }
-): Promise<{ data?: AnalyzeCropImageOutput; error?: string }> {
-  try {
-    const { diagnosis, targetLanguage } = TranslationActionInputSchema.parse(input);
-
-    if (targetLanguage === 'en' || !diagnosis) {
-      return { data: diagnosis };
-    }
-
-    const languageName = languageMap[targetLanguage];
-    const separator = '|||';
-
-    const textsToTranslate: string[] = [];
-    const addText = (text: string | undefined | null) => {
-        if (text && text.trim() && text.trim().toLowerCase() !== 'n/a') {
-            textsToTranslate.push(text.trim());
-        }
-    };
-    
-    addText(diagnosis.diseaseIdentification.diseaseName);
-    diagnosis.remedySuggestions.forEach(remedy => {
-        addText(remedy.name);
-        addText(remedy.description);
-    });
-    addText(diagnosis.notes);
-
-    const uniqueTexts = [...new Set(textsToTranslate)];
-    if (uniqueTexts.length === 0) {
-      return { data: diagnosis };
-    }
-    
-    const combinedText = uniqueTexts.join(separator);
-    const translationResult = await translateText({ textToTranslate: combinedText, targetLanguage: languageName });
-
-    if (!translationResult || !translationResult.translatedText) {
-        return { error: 'Translation failed to return text.' };
-    }
-
-    const translatedParts = translationResult.translatedText.split(separator);
-
-    if (translatedParts.length !== uniqueTexts.length) {
-        console.warn("Translation returned a different number of parts than expected.");
-        return { data: diagnosis };
-    }
-
-    const translationMap = new Map<string, string>();
-    uniqueTexts.forEach((text, index) => {
-        translationMap.set(text, translatedParts[index]?.trim());
-    });
-
-    const translatedDiagnosis = JSON.parse(JSON.stringify(diagnosis));
-
-    const translateField = (text: string | undefined | null) => (text && text.trim() && text.trim().toLowerCase() !== 'n/a' && translationMap.get(text.trim())) || text;
-
-    translatedDiagnosis.diseaseIdentification.diseaseName = translateField(diagnosis.diseaseIdentification.diseaseName);
-
-    translatedDiagnosis.remedySuggestions.forEach((remedy: any, index: number) => {
-        remedy.name = translateField(diagnosis.remedySuggestions[index].name);
-        remedy.description = translateField(diagnosis.remedySuggestions[index].description);
-    });
-
-    if (diagnosis.notes) {
-        translatedDiagnosis.notes = translateField(diagnosis.notes);
-    }
-    
-    return { data: translatedDiagnosis };
-
-  } catch (error) {
-    console.error('Error in getTranslatedDiagnosis action:', error);
-    if (error instanceof z.ZodError) {
-        return { error: 'Invalid input provided for translation.' };
-    }
-    return { error: 'An unexpected error occurred during translation. Please try again.' };
   }
 }
 

@@ -1,7 +1,7 @@
 
 "use client";
 
-import { Globe, NotebookText, TrendingUp, Menu, ChevronDown } from 'lucide-react';
+import { Globe, NotebookText, TrendingUp, Menu, ChevronDown, Sun, Moon } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
 import { Button } from "@/components/ui/button"
@@ -15,6 +15,7 @@ import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/s
 import * as React from 'react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { useTheme } from 'next-themes';
 
 export default function Header() {
   const { t } = useLanguage();
@@ -27,20 +28,16 @@ export default function Header() {
   ];
 
   return (
-    <header className={cn(
-        "sticky top-0 z-50 transition-all duration-300 bg-secondary text-secondary-foreground shadow-sm border-b border-secondary/20"
-    )}>
-      <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Link href="/" className="flex items-center gap-3">
-            <h1 className="text-2xl lg:text-3xl font-bold font-headline">AgriMedic AI</h1>
-          </Link>
-        </div>
+    <header className="sticky top-0 z-50 p-4">
+      <div className="container mx-auto glass-card rounded-xl shadow-lg px-4 py-2 flex items-center justify-between">
+        <Link href="/" className="flex items-center gap-3">
+            <h1 className="text-2xl font-bold tracking-tight">AgriMedic AI</h1>
+        </Link>
         
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-2">
+        <nav className="hidden md:flex items-center gap-1">
           {navLinks.map((link) => (
-            <Button asChild key={link.href} variant={pathname === link.href ? "default" : "ghost"}>
+            <Button asChild key={link.href} variant={pathname === link.href ? "secondary" : "ghost"}>
               <Link href={link.href} className="flex items-center gap-2">
                 <link.icon className="h-5 w-5" />
                 <span>{link.label}</span>
@@ -48,10 +45,12 @@ export default function Header() {
             </Button>
           ))}
           <LanguageDropdown />
+          <ThemeToggle />
         </nav>
         
         {/* Mobile Navigation */}
-        <div className="md:hidden">
+        <div className="md:hidden flex items-center gap-1">
+            <ThemeToggle />
             <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
                 <SheetTrigger asChild>
                     <Button variant="ghost" size="icon">
@@ -63,7 +62,7 @@ export default function Header() {
                   <div className="flex h-full flex-col">
                     <div className="p-6 border-b">
                        <Link href="/" className="flex items-center gap-3" onClick={() => setIsSheetOpen(false)}>
-                          <h1 className="text-2xl font-bold font-headline text-foreground">AgriMedic AI</h1>
+                          <h1 className="text-2xl font-bold">AgriMedic AI</h1>
                         </Link>
                     </div>
                     <nav className="flex-grow p-4 space-y-2">
@@ -110,9 +109,9 @@ function LanguageDropdown() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="flex items-center gap-2 rounded-full px-3" title={t('language')}>
+        <Button variant="ghost" className="flex items-center gap-2" title={t('language')}>
           <Globe className="h-5 w-5" />
-          <span className="uppercase text-sm font-semibold">{language}</span>
+          <span className="uppercase text-sm font-medium">{language}</span>
           <ChevronDown className="h-4 w-4 opacity-70" />
         </Button>
       </DropdownMenuTrigger>
@@ -129,6 +128,22 @@ function LanguageDropdown() {
       </DropdownMenuContent>
     </DropdownMenu>
   );
+}
+
+function ThemeToggle() {
+    const { setTheme, theme } = useTheme()
+   
+    return (
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+      >
+        <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+        <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+        <span className="sr-only">Toggle theme</span>
+      </Button>
+    )
 }
 
 function LanguageButton({ lang, label }: { lang: 'en' | 'hi' | 'mr' | 'te' | 'bn' | 'ta' | 'gu' | 'kn' | 'ml', label: string }) {

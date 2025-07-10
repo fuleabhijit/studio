@@ -16,7 +16,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Badge } from '@/components/ui/badge';
 import Header from '@/components/agrimedic/Header';
 import Footer from '@/components/agrimedic/Footer';
 import { useLanguage } from '@/context/LanguageContext';
@@ -24,7 +23,6 @@ import { getGovtSchemes } from '@/lib/actions';
 import type { FindGovtSchemesOutput } from '@/ai/flows/find-govt-schemes';
 import { IndianStates } from '@/lib/indian-states';
 import { LoaderCircle, AlertTriangle, ListChecks, FileText, Sparkles, Mic, ExternalLink } from 'lucide-react';
-
 
 export default function SchemesPage() {
     const { t } = useLanguage();
@@ -79,17 +77,17 @@ export default function SchemesPage() {
     }
     
     return (
-        <div className="flex flex-col min-h-screen bg-background">
+        <div className="flex flex-col min-h-screen bg-background bg-grid-black/[0.05] dark:bg-grid-white/[0.05]">
             <Header />
             <main className="flex-grow container mx-auto px-4 py-8 md:py-12">
                 <div className="text-center mb-8">
-                    <h1 className="text-3xl md:text-4xl font-bold font-headline">{t('schemesPageTitle')}</h1>
+                    <h1 className="text-3xl md:text-4xl font-bold">{t('schemesPageTitle')}</h1>
                     <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">{t('schemesPageDescription')}</p>
                 </div>
                 
-                <Card className="max-w-4xl mx-auto shadow-lg">
+                <Card className="max-w-4xl mx-auto glass-card shadow-lg">
                     <CardHeader>
-                        <CardTitle className="font-headline text-2xl">{t('eligibilityFormTitle')}</CardTitle>
+                        <CardTitle className="text-2xl">{t('eligibilityFormTitle')}</CardTitle>
                         <CardDescription>{t('eligibilityFormDescription')}</CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -104,7 +102,7 @@ export default function SchemesPage() {
                                                 <FormLabel>{t('stateLabel')}</FormLabel>
                                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                                                     <FormControl>
-                                                        <SelectTrigger>
+                                                        <SelectTrigger className="bg-background/50">
                                                             <SelectValue placeholder={t('statePlaceholder')} />
                                                         </SelectTrigger>
                                                     </FormControl>
@@ -126,7 +124,7 @@ export default function SchemesPage() {
                                                 <FormLabel>{t('categoryLabel')}</FormLabel>
                                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                                                     <FormControl>
-                                                        <SelectTrigger>
+                                                        <SelectTrigger className="bg-background/50">
                                                             <SelectValue placeholder={t('categoryPlaceholder')} />
                                                         </SelectTrigger>
                                                     </FormControl>
@@ -148,7 +146,7 @@ export default function SchemesPage() {
                                             <FormItem>
                                                 <FormLabel>{t('cropLabel')}</FormLabel>
                                                 <FormControl>
-                                                    <Input placeholder={t('cropPlaceholder')} {...field} />
+                                                    <Input className="bg-background/50" placeholder={t('cropPlaceholder')} {...field} />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -161,7 +159,7 @@ export default function SchemesPage() {
                                             <FormItem>
                                                 <FormLabel>{t('landLabel')}</FormLabel>
                                                 <FormControl>
-                                                    <Input type="number" placeholder="e.g., 5" {...field} />
+                                                    <Input type="number" className="bg-background/50" placeholder="e.g., 5" {...field} />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -178,7 +176,7 @@ export default function SchemesPage() {
                                                 <div className="relative">
                                                     <Textarea
                                                         placeholder={t('queryPlaceholder')}
-                                                        className="pr-12"
+                                                        className="pr-12 bg-background/50"
                                                         rows={3}
                                                         {...field}
                                                     />
@@ -217,7 +215,7 @@ export default function SchemesPage() {
                     {isLoading && (
                         <div className="flex flex-col items-center justify-center text-center p-8 h-full">
                            <LoaderCircle className="w-16 h-16 text-primary animate-spin mb-4" />
-                           <h2 className="text-2xl font-bold font-headline mb-2">{t('findingSchemesButton')}</h2>
+                           <h2 className="text-2xl font-bold mb-2">{t('findingSchemesButton')}</h2>
                         </div>
                     )}
                     {error && (
@@ -230,13 +228,13 @@ export default function SchemesPage() {
                     {result && (
                         <div className="space-y-8">
                              <div className="text-center">
-                                <h2 className="text-3xl font-bold font-headline">{t('schemesResultTitle')}</h2>
+                                <h2 className="text-3xl font-bold">{t('schemesResultTitle')}</h2>
                              </div>
                              {result.schemes.map((scheme, index) => (
-                                <Card key={index} className="shadow-lg border-primary/20">
+                                <Card key={index} className="glass-card shadow-lg border-primary/20">
                                     <CardHeader>
                                         <div className="flex justify-between items-start gap-4">
-                                            <CardTitle className="font-headline text-2xl flex items-center gap-3">
+                                            <CardTitle className="text-2xl flex items-center gap-3">
                                                 <Sparkles className="w-6 h-6 text-primary" />
                                                 {scheme.name}
                                             </CardTitle>

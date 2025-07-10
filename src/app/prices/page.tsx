@@ -7,7 +7,7 @@ import Footer from '@/components/agrimedic/Footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { LoaderCircle, AlertTriangle, TrendingUp, DollarSign, ShoppingCart, Wheat } from 'lucide-react';
+import { LoaderCircle, AlertTriangle, TrendingUp, DollarSign, ShoppingCart } from 'lucide-react';
 import { getMarketPriceAlert } from '@/lib/actions';
 import type { PriceAlert } from '@/ai/flows/get-market-price-alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -43,22 +43,22 @@ export default function PricesPage() {
     };
 
     return (
-        <div className="flex flex-col min-h-screen bg-background">
+        <div className="flex flex-col min-h-screen bg-background bg-grid-black/[0.05] dark:bg-grid-white/[0.05]">
             <Header />
             <main className="flex-grow container mx-auto px-4 py-8 md:py-12">
                 <div className="text-center mb-8">
-                    <h1 className="text-3xl md:text-4xl font-bold font-headline">Market Price Tracker</h1>
+                    <h1 className="text-3xl md:text-4xl font-bold">Market Price Tracker</h1>
                     <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">Get real-time price analysis for your crops.</p>
                 </div>
                 
-                <Card className="max-w-2xl mx-auto shadow-lg">
+                <Card className="max-w-2xl mx-auto glass-card shadow-lg">
                     <CardHeader>
-                        <CardTitle className="font-headline text-2xl">Crop Price Analysis</CardTitle>
+                        <CardTitle className="text-2xl">Crop Price Analysis</CardTitle>
                         <CardDescription>Select a crop to get the latest price analysis.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <Select onValueChange={setSelectedCrop} value={selectedCrop}>
-                            <SelectTrigger className="w-full text-lg py-6">
+                            <SelectTrigger className="w-full text-lg py-6 bg-background/50">
                                 <SelectValue placeholder="Select a crop..." />
                             </SelectTrigger>
                             <SelectContent>
@@ -89,9 +89,9 @@ export default function PricesPage() {
                         </Alert>
                     )}
                     {result && (
-                         <Card className="shadow-lg border-primary/20">
+                         <Card className="glass-card shadow-lg border-primary/20">
                             <CardHeader>
-                                <CardTitle className="font-headline text-2xl flex items-center gap-3">
+                                <CardTitle className="text-2xl flex items-center gap-3">
                                     <TrendingUp className="w-6 h-6 text-primary" />
                                     Today's {result.commodity} Price Summary
                                 </CardTitle>

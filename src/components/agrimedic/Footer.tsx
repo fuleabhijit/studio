@@ -13,8 +13,8 @@ export default function Footer() {
   }, []);
 
   return (
-    <footer className="bg-secondary text-secondary-foreground py-6 mt-auto border-t">
-      <div className="container mx-auto px-4 text-center">
+    <footer className="py-6 mt-auto">
+      <div className="container mx-auto px-4 text-center text-muted-foreground">
         <p className="text-sm">{t('footerCopyright').replace('{year}', year.toString())}</p>
         <p className="text-xs mt-1">{t('footerTagline')}</p>
       </div>
