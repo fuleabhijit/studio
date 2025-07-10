@@ -154,9 +154,14 @@ export async function getGovtSchemes(
   }
 }
 
-export async function getMarketPriceAlert(): Promise<{ data?: PriceAlert; error?: string }> {
+const GetMarketPriceAlertInputSchema = z.object({
+  commodity: z.string().min(1, 'Commodity is required.'),
+});
+
+export async function getMarketPriceAlert(input: z.infer<typeof GetMarketPriceAlertInputSchema>): Promise<{ data?: PriceAlert; error?: string }> {
   try {
-    const result = await getMarketPriceAlertFlowWrapper();
+    const validatedInput = GetMarketPriceAlertInputSchema.parse(input);
+    const result = await getMarketPriceAlertFlowWrapper(validatedInput);
     return { data: result };
   } catch (error) {
     console.error('Error in getMarketPriceAlert action:', error);

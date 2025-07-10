@@ -7,22 +7,30 @@ import Footer from '@/components/agrimedic/Footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { LoaderCircle, AlertTriangle, TrendingUp, DollarSign, ShoppingCart } from 'lucide-react';
+import { LoaderCircle, AlertTriangle, TrendingUp, DollarSign, ShoppingCart, Wheat } from 'lucide-react';
 import { getMarketPriceAlert } from '@/lib/actions';
 import type { PriceAlert } from '@/ai/flows/get-market-price-alert';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
+
+const availableCrops = ["Tomato", "Onion", "Potato", "Wheat"];
 
 export default function PricesPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [result, setResult] = useState<PriceAlert | null>(null);
+    const [selectedCrop, setSelectedCrop] = useState<string>('');
 
     const handleFetchPrices = async () => {
+        if (!selectedCrop) {
+            setError("Please select a crop first.");
+            return;
+        }
         setIsLoading(true);
         setError(null);
         setResult(null);
 
-        const response = await getMarketPriceAlert();
+        const response = await getMarketPriceAlert({ commodity: selectedCrop });
 
         if (response.error) {
             setError(response.error);
@@ -45,30 +53,34 @@ export default function PricesPage() {
                 
                 <Card className="max-w-2xl mx-auto shadow-lg">
                     <CardHeader>
-                        <CardTitle className="font-headline text-2xl">Tomato Price Alert</CardTitle>
-                        <CardDescription>Click the button to get the latest price analysis for tomatoes.</CardDescription>
+                        <CardTitle className="font-headline text-2xl">Crop Price Analysis</CardTitle>
+                        <CardDescription>Select a crop to get the latest price analysis.</CardDescription>
                     </CardHeader>
-                    <CardContent>
-                        <Button onClick={handleFetchPrices} disabled={isLoading} className="w-full text-lg py-6 bg-accent text-accent-foreground hover:bg-accent/90">
+                    <CardContent className="space-y-4">
+                        <Select onValueChange={setSelectedCrop} value={selectedCrop}>
+                            <SelectTrigger className="w-full text-lg py-6">
+                                <SelectValue placeholder="Select a crop..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {availableCrops.map(crop => (
+                                    <SelectItem key={crop} value={crop} className="text-lg">{crop}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        <Button onClick={handleFetchPrices} disabled={isLoading || !selectedCrop} className="w-full text-lg py-6 bg-accent text-accent-foreground hover:bg-accent/90">
                             {isLoading ? (
                                 <>
                                     <LoaderCircle className="mr-2 h-5 w-5 animate-spin" />
                                     Fetching Prices...
                                 </>
                             ) : (
-                                "Get Latest Price Alert"
+                                "Get Prices"
                             )}
                         </Button>
                     </CardContent>
                 </Card>
 
                 <div className="mt-12 max-w-2xl mx-auto">
-                    {isLoading && (
-                        <div className="flex flex-col items-center justify-center text-center p-8 h-full">
-                           <LoaderCircle className="w-16 h-16 text-primary animate-spin mb-4" />
-                           <h2 className="text-2xl font-bold font-headline mb-2">Analyzing Market Data...</h2>
-                        </div>
-                    )}
                     {error && (
                         <Alert variant="destructive">
                             <AlertTriangle className="h-4 w-4" />
@@ -81,14 +93,14 @@ export default function PricesPage() {
                             <CardHeader>
                                 <CardTitle className="font-headline text-2xl flex items-center gap-3">
                                     <TrendingUp className="w-6 h-6 text-primary" />
-                                    Today's Tomato Price Summary
+                                    Today's {result.commodity} Price Summary
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-4 text-lg">
                                 <div className="flex items-center gap-4">
                                     <DollarSign className="w-6 h-6 text-accent"/>
                                     <div>
-                                        <p className="font-semibold">Price Range: {result.priceRange} INR/kg <span className={result.trend === '▲' ? 'text-success' : 'text-destructive'}>{result.trend}</span></p>
+                                        <p className="font-semibold">Price Range: {result.priceRange} INR/kg <span className={result.trend === '▲' ? 'text-success' : result.trend === '▼' ? 'text-destructive' : ''}>{result.trend}</span></p>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-4">
