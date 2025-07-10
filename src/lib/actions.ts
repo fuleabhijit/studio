@@ -1,25 +1,20 @@
 
 'use server';
 
-import { diagnosePlant, type ComprehensiveDiagnosisOutput, type ComprehensiveDiagnosisInput } from '@/ai/flows/diagnose-plant-flow';
+import { diagnosePlant } from '@/ai/flows/diagnose-plant-flow';
 import { getMarketPriceAlertFlowWrapper, type PriceAlert } from '@/ai/flows/get-market-price-alert';
 import { findGovtSchemes, type FindGovtSchemesOutput } from '@/ai/flows/find-govt-schemes';
 import { translateText } from '@/ai/flows/translate-text';
 import { textToSpeech } from '@/ai/flows/text-to-speech';
 import { z } from 'zod';
 import type { Language } from './translations';
-import { FindGovtSchemesInputSchema } from '@/ai/schemas';
-
-const DiagnosisInputSchema = z.object({
-  photoDataUri: z.string(),
-  language: z.string(),
-});
+import { FindGovtSchemesInputSchema, ComprehensiveDiagnosisInputSchema, type ComprehensiveDiagnosisOutput } from '@/ai/schemas';
 
 export async function getComprehensiveDiagnosis(
-  input: z.infer<typeof DiagnosisInputSchema>
+  input: z.infer<typeof ComprehensiveDiagnosisInputSchema>
 ): Promise<{ data?: ComprehensiveDiagnosisOutput; error?: string }> {
   try {
-    const validatedInput = DiagnosisInputSchema.parse(input);
+    const validatedInput = ComprehensiveDiagnosisInputSchema.parse(input);
     const result = await diagnosePlant(validatedInput);
     return { data: result };
   } catch (error) {

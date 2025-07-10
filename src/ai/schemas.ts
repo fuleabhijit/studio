@@ -1,5 +1,39 @@
 import { z } from 'zod';
 
+export const DiseaseDiagnosisSchema = z.object({
+  isPlant: z.boolean().describe('Whether the image contains a plant.'),
+  plantName: z.string().describe('The common name of the plant identified (e.g., "Tomato", "Potato").'),
+  diseaseIdentification: z.object({
+    diseaseDetected: z.boolean().describe('Whether or not a disease is detected.'),
+    diseaseName: z.string().describe('The common name of the identified disease or pest.'),
+  }),
+  remedySuggestions: z.array(
+    z.object({
+      name: z.string().describe('The name of the remedy or product.'),
+      type: z.enum(['Organic', 'Chemical', 'Preventive']).describe('The type of the remedy.'),
+      description: z.string().describe('A detailed description of how to apply the remedy, including dosage and frequency.'),
+    })
+  ).describe('A list of recommended remedies.'),
+});
+
+export const ComprehensiveDiagnosisOutputSchema = z.object({
+  diagnosis: DiseaseDiagnosisSchema,
+  marketAnalysis: z.any().optional().describe('Market price analysis for the identified plant/crop.'),
+  governmentSchemes: z.any().optional().describe('Relevant government schemes for the identified plant/crop.'),
+});
+export type ComprehensiveDiagnosisOutput = z.infer<typeof ComprehensiveDiagnosisOutputSchema>;
+
+export const ComprehensiveDiagnosisInputSchema = z.object({
+  photoDataUri: z
+    .string()
+    .describe(
+      "A photo of a plant, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'"
+    ),
+  language: z.string().describe("The user's selected language (e.g., 'en', 'hi')."),
+});
+export type ComprehensiveDiagnosisInput = z.infer<typeof ComprehensiveDiagnosisInputSchema>;
+
+
 export const AnalyzeCropImageOutputSchema = z.object({
   diseaseIdentification: z.object({
     diseaseDetected: z.boolean().describe('Whether or not a disease is detected.'),

@@ -4,72 +4,18 @@
  * @fileOverview A comprehensive plant problem diagnosis AI agent.
  *
  * - diagnosePlant - A function that handles the full plant diagnosis process, including market price and scheme lookups.
- * - ComprehensiveDiagnosisInput - The input type for the diagnosePlant function.
- * - ComprehensiveDiagnosisOutput - The return type for the diagnosePlant function.
  */
 
 import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
 import { findGovtSchemes } from './find-govt-schemes';
 import { getMarketPriceAlertFlowWrapper } from './get-market-price-alert';
 import { translateText } from './translate-text';
-import type { Language } from '@/lib/translations';
-
-// Define schemas for internal sub-tasks
-const DiseaseDiagnosisSchema = z.object({
-  isPlant: z.boolean().describe('Whether the image contains a plant.'),
-  plantName: z.string().describe('The common name of the plant identified (e.g., "Tomato", "Potato").'),
-  diseaseIdentification: z.object({
-    diseaseDetected: z.boolean().describe('Whether or not a disease is detected.'),
-    diseaseName: z.string().describe('The common name of the identified disease or pest.'),
-  }),
-  remedySuggestions: z.array(
-    z.object({
-      name: z.string().describe('The name of the remedy or product.'),
-      type: z.enum(['Organic', 'Chemical', 'Preventive']).describe('The type of the remedy.'),
-      description: z.string().describe('A detailed description of how to apply the remedy, including dosage and frequency.'),
-    })
-  ).describe('A list of recommended remedies.'),
-});
-
-// Final output schema combining all information
-export const ComprehensiveDiagnosisOutputSchema = z.object({
-  diagnosis: DiseaseDiagnosisSchema,
-  marketAnalysis: z.any().optional().describe('Market price analysis for the identified plant/crop.'),
-  governmentSchemes: z.any().optional().describe('Relevant government schemes for the identified plant/crop.'),
-});
-export type ComprehensiveDiagnosisOutput = z.infer<typeof ComprehensiveDiagnosisOutputSchema>;
-
-export const ComprehensiveDiagnosisInputSchema = z.object({
-  photoDataUri: z
-    .string()
-    .describe(
-      "A photo of a plant, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'"
-    ),
-  language: z.string().describe("The user's selected language (e.g., 'en', 'hi')."),
-});
-export type ComprehensiveDiagnosisInput = z.infer<typeof ComprehensiveDiagnosisInputSchema>;
-
-// Main exported function
-export async function diagnosePlant(input: ComprehensiveDiagnosisInput): Promise<ComprehensiveDiagnosisOutput> {
-  return diagnosePlantFlow(input);
-}
-
-// Prompt for the initial disease diagnosis
-const diagnosisPrompt = ai.definePrompt({
-  name: 'diseaseDiagnosisPrompt',
-  model: 'googleai/gemini-2.0-flash',
-  input: {schema: z.object({ photoDataUri: z.string() })},
-  output: {schema: DiseaseDiagnosisSchema},
-  prompt: `You are an expert botanist. Analyze the provided plant image.
-  Identify the plant's common name and any diseases or pests.
-  Suggest at least two remedies (Organic, Chemical, or Preventive).
-  If no plant is detected or the plant is healthy, state that clearly.
-  
-  Photo: {{media url=photoDataUri}}
-  
-  Respond ONLY with a JSON object strictly adhering to the DiseaseDiagnosisSchema.`,
-});
+import {
+    ComprehensiveDiagnosisInputSchema,
+    ComprehensiveDiagnosisOutputSchema,
+    DiseaseDiagnosisSchema
+} from '@/ai/schemas';
+import type { ComprehensiveDiagnosisInput, ComprehensiveDiagnosisOutput } from '@/ai/schemas';
 
 const languageMap: Record<string, string> = {
     en: 'English',
@@ -83,6 +29,26 @@ const languageMap: Record<string, string> = {
     ml: 'Malayalam',
 };
 
+// Main exported function
+export async function diagnosePlant(input: ComprehensiveDiagnosisInput): Promise<ComprehensiveDiagnosisOutput> {
+  return diagnosePlantFlow(input);
+}
+
+// Prompt for the initial disease diagnosis
+const diagnosisPrompt = ai.definePrompt({
+  name: 'diseaseDiagnosisPrompt',
+  model: 'googleai/gemini-2.0-flash',
+  input: {schema: ComprehensiveDiagnosisInputSchema.pick({ photoDataUri: true })},
+  output: {schema: DiseaseDiagnosisSchema},
+  prompt: `You are an expert botanist. Analyze the provided plant image.
+  Identify the plant's common name and any diseases or pests.
+  Suggest at least two remedies (Organic, Chemical, or Preventive).
+  If no plant is detected or the plant is healthy, state that clearly.
+  
+  Photo: {{media url=photoDataUri}}
+  
+  Respond ONLY with a JSON object strictly adhering to the DiseaseDiagnosisSchema.`,
+});
 
 const diagnosePlantFlow = ai.defineFlow(
   {

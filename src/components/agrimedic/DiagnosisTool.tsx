@@ -12,7 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge, type BadgeProps } from '@/components/ui/badge';
 import { getComprehensiveDiagnosis } from '@/lib/actions';
-import type { ComprehensiveDiagnosisOutput } from '@/ai/flows/diagnose-plant-flow';
+import type { ComprehensiveDiagnosisOutput } from '@/ai/schemas';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/context/LanguageContext';
 
