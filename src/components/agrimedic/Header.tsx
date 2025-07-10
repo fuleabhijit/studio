@@ -1,7 +1,7 @@
 
 "use client";
 
-import { Leaf, Globe, NotebookText, TrendingUp, Menu } from 'lucide-react';
+import { Globe, NotebookText, TrendingUp, Menu, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
 import { Button } from "@/components/ui/button"
@@ -17,7 +17,7 @@ import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
 export default function Header() {
-  const { t, setLanguage, language } = useLanguage();
+  const { t } = useLanguage();
   const [isSheetOpen, setIsSheetOpen] = React.useState(false);
   const pathname = usePathname();
 
@@ -61,7 +61,6 @@ export default function Header() {
                   <div className="flex h-full flex-col">
                     <div className="p-6 border-b">
                        <Link href="/" className="flex items-center gap-3" onClick={() => setIsSheetOpen(false)}>
-                          <Leaf className="h-8 w-8 text-primary" />
                           <h1 className="text-2xl font-bold font-headline text-foreground">{t('appTitle')}</h1>
                         </Link>
                     </div>
@@ -107,9 +106,10 @@ function LanguageDropdown() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="rounded-full" size="icon" title={t('language')}>
-          <Globe className="h-6 w-6" />
-          <span className="sr-only">{t('language')}</span>
+        <Button variant="ghost" className="flex items-center gap-2 rounded-full px-3" title={t('language')}>
+          <Globe className="h-5 w-5" />
+          <span className="uppercase text-sm font-semibold">{language}</span>
+          <ChevronDown className="h-4 w-4 opacity-70" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
