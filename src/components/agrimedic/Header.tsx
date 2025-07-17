@@ -1,7 +1,7 @@
 
 "use client";
 
-import { Globe, NotebookText, TrendingUp, Menu, ChevronDown, Sun, Moon } from 'lucide-react';
+import { Globe, NotebookText, TrendingUp, Menu, ChevronDown, Sun, Moon, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
 import { Button } from "@/components/ui/button"
@@ -25,6 +25,7 @@ export default function Header() {
   const navLinks = [
     { href: "/prices", icon: TrendingUp, label: t('pricesNavTitle') },
     { href: "/schemes", icon: NotebookText, label: t('schemesNavTitle') },
+    { href: "/qa", icon: MessageSquare, label: "Q&A" },
   ];
 
   return (

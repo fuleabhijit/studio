@@ -1,14 +1,20 @@
-
 'use server';
 
 import { diagnosePlant } from '@/ai/flows/diagnose-plant-flow';
 import { getMarketPriceAlertFlowWrapper, type PriceAlert } from '@/ai/flows/get-market-price-alert';
 import { findGovtSchemes, type FindGovtSchemesOutput } from '@/ai/flows/find-govt-schemes';
+import { answerFarmerQuery } from '@/ai/flows/answer-farmer-query';
 import { translateText } from '@/ai/flows/translate-text';
 import { textToSpeech } from '@/ai/flows/text-to-speech';
 import { z } from 'zod';
 import type { Language } from './translations';
-import { FindGovtSchemesInputSchema, ComprehensiveDiagnosisInputSchema, type ComprehensiveDiagnosisOutput } from '@/ai/schemas';
+import { 
+  FindGovtSchemesInputSchema, 
+  ComprehensiveDiagnosisInputSchema, 
+  type ComprehensiveDiagnosisOutput,
+  AnswerFarmerQueryInputSchema,
+  type AnswerFarmerQueryOutput,
+} from '@/ai/schemas';
 
 export async function getComprehensiveDiagnosis(
   input: z.infer<typeof ComprehensiveDiagnosisInputSchema>
@@ -69,5 +75,21 @@ export async function getMarketPriceAlert(input: z.infer<typeof GetMarketPriceAl
   } catch (error) {
     console.error('Error in getMarketPriceAlert action:', error);
     return { error: 'An unexpected error occurred while fetching market prices.' };
+  }
+}
+
+export async function getFarmerQueryAnswer(
+  input: z.infer<typeof AnswerFarmerQueryInputSchema>
+): Promise<{ data?: AnswerFarmerQueryOutput; error?: string }> {
+  try {
+    const validatedInput = AnswerFarmerQueryInputSchema.parse(input);
+    const result = await answerFarmerQuery(validatedInput);
+    return { data: result };
+  } catch (error) {
+    console.error('Error in getFarmerQueryAnswer action:', error);
+    if (error instanceof z.ZodError) {
+      return { error: 'Invalid input provided for the query.' };
+    }
+    return { error: 'An unexpected error occurred while generating the answer.' };
   }
 }

@@ -69,3 +69,15 @@ export const GovtSchemesOutputSchema = z.object({
     })
   ).describe("A list of relevant government schemes based on the user's profile and query."),
 });
+
+
+export const AnswerFarmerQueryInputSchema = z.object({
+  query: z.string().describe('The question asked by the farmer.'),
+});
+export type AnswerFarmerQueryInput = z.infer<typeof AnswerFarmerQueryInputSchema>;
+
+
+export const AnswerFarmerQueryOutputSchema = z.object({
+    answer: z.string().describe('A helpful and actionable answer to the farmer\'s question.'),
+});
+export type AnswerFarmerQueryOutput = z.infer<typeof AnswerFarmerQueryOutputSchema>;
