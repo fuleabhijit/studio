@@ -5,7 +5,7 @@
 
 @layer base {
   :root {
-    --background: 48 33% 94%; /* Light Beige */
+    --background: 48 33% 94%;
     --foreground: 222 47% 11%;
     --card: 48 33% 94%;
     --card-foreground: 222 47% 11%;
@@ -17,7 +17,7 @@
     --secondary-foreground: 222 47% 11%;
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 43 74% 49%; /* Muted Gold #B8860B */
+    --accent: 260 90% 65%; /* Vibrant Purple/Blue */
     --accent-foreground: 355 92% 96%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
@@ -25,21 +25,21 @@
     --success-foreground: 210 40% 98%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 84 39% 48%;
-    --radius: 0.75rem;
+    --ring: 260 90% 65%;
+    --radius: 1rem; /* Increased from 0.75rem */
 
     /* Glassmorphism variables */
-    --glass-bg: rgba(255, 255, 255, 0.4);
+    --glass-bg: rgba(255, 255, 255, 0.1);
     --glass-border: rgba(255, 255, 255, 0.2);
     --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
   }
 
   .dark {
-    --background: 222 47% 11%;
+    --background: 224 71% 4%; /* Deep Blue/Black */
     --foreground: 210 40% 98%;
-    --card: 222 47% 14%;
+    --card: 224 71% 8%;
     --card-foreground: 210 40% 98%;
-    --popover: 222 47% 11%;
+    --popover: 224 71% 4%;
     --popover-foreground: 210 40% 98%;
     --primary: 84 39% 58%;
     --primary-foreground: 222 47% 11%;
@@ -47,7 +47,7 @@
     --secondary-foreground: 210 40% 98%;
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
-    --accent: 43 74% 59%;
+    --accent: 260 90% 70%;
     --accent-foreground: 222 47% 11%;
     --destructive: 0 62.8% 50.6%;
     --destructive-foreground: 210 40% 98%;
@@ -55,10 +55,10 @@
     --success-foreground: 222 47% 11%;
     --border: 217.2 32.6% 22.5%;
     --input: 217.2 32.6% 22.5%;
-    --ring: 84 39% 58%;
+    --ring: 260 90% 70%;
 
     /* Glassmorphism variables */
-    --glass-bg: rgba(25, 28, 43, 0.6);
+    --glass-bg: rgba(25, 28, 43, 0.2);
     --glass-border: rgba(255, 255, 255, 0.1);
     --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
   }
@@ -70,10 +70,33 @@
   }
   body {
     @apply bg-background text-foreground;
+    background-image: linear-gradient(to right top, #d1d1d1, #d0d2d6, #ced4da, #ccd6dd, #c9d8de);
     font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  .dark body {
+    background-image: linear-gradient(to right top, #0c0a1d, #120f2b, #181439, #201848, #291c58);
   }
 }
 
 .glass-card {
-  @apply bg-[--glass-bg] backdrop-blur-md border border-[--glass-border] shadow-[--glass-shadow];
+  @apply bg-[--glass-bg] backdrop-blur-lg border border-[--glass-border] shadow-xl rounded-2xl transition-all duration-300;
 }
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.8s ease-in-out forwards;
+  opacity: 0;
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-delay-200 { animation-delay: 200ms; }
+.animate-delay-400 { animation-delay: 400ms; }

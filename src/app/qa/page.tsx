@@ -55,23 +55,23 @@ export default function QAPage() {
     }
 
     return (
-        <div className="flex flex-col min-h-screen bg-background bg-grid-black/[0.05] dark:bg-grid-white/[0.05]">
+        <div className="flex flex-col min-h-screen">
             <Header />
-            <main className="flex-grow container mx-auto px-4 py-8 md:py-12">
-                <div className="text-center mb-8">
-                    <h1 className="text-3xl md:text-4xl font-bold">Farmer Q&A</h1>
-                    <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">Ask any question about farming and get an instant answer from our AI expert.</p>
+            <main className="flex-grow container mx-auto px-4 py-8 md:py-16">
+                <div className="text-center mb-12">
+                    <h1 className="text-4xl md:text-5xl font-bold">Farmer Q&A 🤔</h1>
+                    <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">Ask any question about farming and get an instant answer from our AI expert.</p>
                 </div>
                 
-                <Card className="max-w-3xl mx-auto glass-card shadow-lg">
+                <Card className="max-w-3xl mx-auto glass-card shadow-xl">
                     <CardHeader>
                         <CardTitle className="text-2xl flex items-center gap-3">
-                            <MessageSquare className="w-6 h-6 text-primary" />
+                            <MessageSquare className="w-8 h-8 text-primary" />
                             Ask a Question
                         </CardTitle>
-                        <CardDescription>Describe your problem or question in detail below.</CardDescription>
+                        <CardDescription>Describe your problem or question in detail below. The more detail, the better the answer!</CardDescription>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="p-6">
                         <Form {...form}>
                             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                                 <FormField
@@ -83,8 +83,8 @@ export default function QAPage() {
                                             <FormControl>
                                                 <Textarea
                                                     placeholder="e.g., How can I control pests on my tomato plants using organic methods?"
-                                                    className="resize-none bg-background/50"
-                                                    rows={4}
+                                                    className="resize-none bg-background/50 text-base"
+                                                    rows={5}
                                                     {...field}
                                                 />
                                             </FormControl>
@@ -92,14 +92,14 @@ export default function QAPage() {
                                         </FormItem>
                                     )}
                                 />
-                                <Button type="submit" disabled={isLoading} className="w-full text-lg py-6 bg-accent text-accent-foreground hover:bg-accent/90">
+                                <Button type="submit" disabled={isLoading} className="w-full text-lg py-6 bg-accent text-accent-foreground hover:bg-accent/90 transform hover:scale-105 transition-all duration-300">
                                     {isLoading ? (
                                         <>
                                             <LoaderCircle className="mr-2 h-5 w-5 animate-spin" />
-                                            Getting Answer...
+                                            Thinking...
                                         </>
                                     ) : (
-                                        "Get AI Answer"
+                                        "Get AI Answer 🚀"
                                     )}
                                 </Button>
                             </form>
@@ -109,22 +109,22 @@ export default function QAPage() {
 
                 <div className="mt-12 max-w-3xl mx-auto">
                     {error && (
-                        <Alert variant="destructive">
+                        <Alert variant="destructive" className="glass-card bg-destructive/20 border-destructive/50">
                             <AlertTriangle className="h-4 w-4" />
                             <AlertTitle>Error</AlertTitle>
                             <AlertDescription>{error}</AlertDescription>
                         </Alert>
                     )}
                     {result && (
-                         <Card className="glass-card shadow-lg border-primary/20">
+                         <Card className="glass-card shadow-xl border-primary/20">
                             <CardHeader>
                                 <CardTitle className="text-2xl flex items-center gap-3">
-                                    <Sparkles className="w-6 h-6 text-primary" />
+                                    <Sparkles className="w-8 h-8 text-primary" />
                                     AI Generated Answer
                                 </CardTitle>
                             </CardHeader>
-                            <CardContent className="space-y-4 text-lg">
-                               <p className="whitespace-pre-wrap">{result.answer}</p>
+                            <CardContent className="space-y-4 text-lg p-6">
+                               <p className="whitespace-pre-wrap leading-relaxed">{result.answer}</p>
                             </CardContent>
                         </Card>
                     )}

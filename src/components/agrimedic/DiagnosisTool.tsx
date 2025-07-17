@@ -230,28 +230,28 @@ export default function DiagnosisTool() {
     };
     
     return (
-        <div className="grid lg:grid-cols-2 gap-6 lg:gap-8">
-            <div className="space-y-6">
+        <div className="grid lg:grid-cols-2 gap-8">
+            <div className="space-y-8">
                 <Card className="glass-card">
-                    <CardHeader className="flex-row items-start justify-between gap-4 space-y-0">
+                    <CardHeader className="flex-row items-start justify-between gap-4 space-y-0 p-6">
                         <div className="flex items-center gap-4">
                             <HeartPulse className="w-8 h-8 text-primary flex-shrink-0" />
                             <CardTitle className="text-2xl">{t('diagnosisTitle')}</CardTitle>
                         </div>
                         <div className="flex items-center gap-1">
                             {lastAudioSrc && (
-                                <Button variant="ghost" size="icon" onClick={handleRepeatTTS} disabled={!!ttsLoading}>
+                                <Button variant="ghost" size="icon" onClick={handleRepeatTTS} disabled={!!ttsLoading} className="rounded-full h-10 w-10">
                                     <RotateCcw className="w-5 h-5" />
                                 </Button>
                             )}
-                            <Button variant="ghost" size="icon" onClick={() => handlePlayTTS('diagnosis')} disabled={!!ttsLoading}>
+                            <Button variant="ghost" size="icon" onClick={() => handlePlayTTS('diagnosis')} disabled={!!ttsLoading} className="rounded-full h-10 w-10">
                                 {ttsLoading === 'diagnosis' ? <LoaderCircle className="w-5 h-5 animate-spin" /> : <Volume2 className="w-5 h-5" />}
                             </Button>
                         </div>
                     </CardHeader>
-                    <CardContent>
-                        <p className="text-lg font-semibold">{diagnosis.diseaseIdentification.diseaseName}</p>
-                        <Badge variant={diagnosis.diseaseIdentification.diseaseDetected ? "destructive" : "success"} className="mt-2">
+                    <CardContent className="p-6 pt-0">
+                        <p className="text-xl font-semibold">{diagnosis.diseaseIdentification.diseaseName}</p>
+                        <Badge variant={diagnosis.diseaseIdentification.diseaseDetected ? "destructive" : "success"} className="mt-2 text-sm">
                            {diagnosis.diseaseIdentification.diseaseDetected ? t('diseaseDetectedBadge') : t('noDiseaseDetectedBadge')}
                         </Badge>
                     </CardContent>
@@ -259,46 +259,46 @@ export default function DiagnosisTool() {
 
                 {diagnosis.remedySuggestions && diagnosis.remedySuggestions.length > 0 && (
                     <Card className="glass-card">
-                        <CardHeader className="flex-row items-start justify-between gap-4 space-y-0">
+                        <CardHeader className="flex-row items-start justify-between gap-4 space-y-0 p-6">
                            <div className="flex items-center gap-4">
                              <FlaskConical className="w-8 h-8 text-accent flex-shrink-0" />
                              <CardTitle className="text-2xl">{t('remedyRecommendationsTitle')}</CardTitle>
                            </div>
-                           <Button variant="ghost" size="icon" onClick={() => handlePlayTTS('remedies')} disabled={!!ttsLoading}>
+                           <Button variant="ghost" size="icon" onClick={() => handlePlayTTS('remedies')} disabled={!!ttsLoading} className="rounded-full h-10 w-10">
                              {ttsLoading === 'remedies' ? <LoaderCircle className="w-5 h-5 animate-spin" /> : <Volume2 className="w-5 h-5" />}
                            </Button>
                         </CardHeader>
-                        <CardContent className="space-y-4">
+                        <CardContent className="space-y-4 p-6 pt-0">
                             {diagnosis.remedySuggestions.map((remedy, index) => (
-                                <div key={index} className="p-3 rounded-md bg-background/50">
+                                <div key={index} className="p-4 rounded-lg bg-background/50">
                                     <div className="flex justify-between items-start">
-                                        <h4 className="font-bold">{remedy.name}</h4>
+                                        <h4 className="font-bold text-lg">{remedy.name}</h4>
                                         <Badge variant={getRemedyTypeBadgeVariant(remedy.type)}>{remedy.type}</Badge>
                                     </div>
-                                    <p className="text-muted-foreground mt-1 text-sm">{remedy.description}</p>
+                                    <p className="text-muted-foreground mt-1 text-base">{remedy.description}</p>
                                 </div>
                             ))}
                         </CardContent>
                     </Card>
                 )}
             </div>
-            <div className="space-y-6">
+            <div className="space-y-8">
                 {marketAnalysis && (
                     <Card className="glass-card">
-                         <CardHeader className="flex-row items-center gap-4 space-y-0">
+                         <CardHeader className="flex-row items-center gap-4 space-y-0 p-6">
                             <TrendingUp className="w-8 h-8 text-primary" />
-                            <CardTitle className="text-2xl">{marketAnalysis.commodity} Prices</CardTitle>
+                            <CardTitle className="text-2xl">{marketAnalysis.commodity} Market Intel</CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-3">
-                            <div className="flex items-center gap-3"><ShoppingCart className="w-5 h-5 text-accent"/> <p>Range: {marketAnalysis.priceRange} INR/kg</p></div>
+                        <CardContent className="space-y-3 p-6 pt-0">
+                            <div className="flex items-center gap-3"><ShoppingCart className="w-5 h-5 text-accent"/> <p>Range: {marketAnalysis.priceRange} INR/quintal</p></div>
                             <div className="flex items-center gap-3"><TrendingUp className="w-5 h-5 text-accent"/> <p>Trend: {marketAnalysis.trend}</p></div>
                             <div className="flex items-center gap-3"><Sparkles className="w-5 h-5 text-accent"/> <p>Advice: <strong>{marketAnalysis.advice}</strong> - {marketAnalysis.reason}</p></div>
                         </CardContent>
                     </Card>
                 )}
-                 <div className="flex items-center gap-2">
-                    <Button onClick={handleShare} className="w-full" variant="outline"><Share2 className="mr-2 h-4 w-4"/> {t('shareButton')}</Button>
-                    <Button className="w-full" variant="outline"><Save className="mr-2 h-4 w-4"/> {t('saveButton')}</Button>
+                 <div className="flex items-center gap-4">
+                    <Button onClick={handleShare} className="w-full text-lg py-6" variant="outline"><Share2 className="mr-2 h-5 w-5"/> {t('shareButton')}</Button>
+                    <Button className="w-full text-lg py-6" variant="outline"><Save className="mr-2 h-5 w-5"/> {t('saveButton')}</Button>
                  </div>
             </div>
         </div>
@@ -307,16 +307,17 @@ export default function DiagnosisTool() {
   
   const renderLoading = () => (
     <div className="flex flex-col items-center justify-center text-center p-8 h-full">
-       <LoaderCircle className="w-16 h-16 text-primary animate-spin mb-4" />
-       <h2 className="text-2xl font-bold mb-2">{t('diagnosingButton')}</h2>
+       <LoaderCircle className="w-20 h-20 text-primary animate-spin mb-6" />
+       <h2 className="text-3xl font-bold mb-2">{t('diagnosingButton')}</h2>
+       <p className="text-muted-foreground">Our AI is analyzing your image...</p>
     </div>
   );
 
   const renderPlaceholder = () => (
-      <div className="flex flex-col items-center justify-center text-center p-8 border-2 border-dashed border-border rounded-lg h-full bg-background/30">
-          <Flower2 size={64} className="text-muted-foreground mb-4" />
-          <h2 className="text-2xl font-bold mb-2">{t('placeholderTitle')}</h2>
-          <p className="text-muted-foreground max-w-sm">
+      <div className="flex flex-col items-center justify-center text-center p-8 border-2 border-dashed border-border/50 rounded-2xl h-full bg-background/20 min-h-[400px]">
+          <Flower2 size={80} className="text-muted-foreground mb-6" />
+          <h2 className="text-3xl font-bold mb-3">{t('placeholderTitle')}</h2>
+          <p className="text-muted-foreground max-w-sm text-lg">
             {t('placeholderDescription')}
           </p>
       </div>
@@ -324,10 +325,10 @@ export default function DiagnosisTool() {
 
   return (
     <div className="relative pb-24">
-      <Card className="max-w-4xl mx-auto mb-8 glass-card">
-        <CardContent className="p-4">
+      <Card className="max-w-4xl mx-auto mb-12 glass-card">
+        <CardContent className="p-6">
             <div
-                className="relative w-full h-48 flex-shrink-0 border-2 border-dashed border-border rounded-lg flex items-center justify-center cursor-pointer hover:border-primary hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+                className="relative w-full h-64 flex-shrink-0 border-2 border-dashed border-border/50 rounded-2xl flex items-center justify-center cursor-pointer hover:border-primary hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-300"
                 onClick={triggerFileSelect}
             >
                 {imagePreview ? (
@@ -336,16 +337,16 @@ export default function DiagnosisTool() {
                             src={imagePreview}
                             alt="Plant preview"
                             fill
-                            className="object-cover rounded-lg"
+                            className="object-cover rounded-2xl"
                         />
-                        <Button variant="destructive" size="icon" className="absolute top-1 right-1 h-7 w-7 z-10" onClick={(e) => {e.stopPropagation(); handleClear();}}>
-                            <X className="h-4 w-4"/>
+                        <Button variant="destructive" size="icon" className="absolute top-2 right-2 h-8 w-8 z-10 rounded-full" onClick={(e) => {e.stopPropagation(); handleClear();}}>
+                            <X className="h-5 w-5"/>
                         </Button>
                     </>
                 ) : (
-                    <div className="text-center text-muted-foreground p-2">
-                        <Camera className="mx-auto h-12 w-12" />
-                        <p className="text-sm mt-2 font-semibold">{t('uploadPrompt')}</p>
+                    <div className="text-center text-muted-foreground p-4">
+                        <Camera className="mx-auto h-16 w-16" />
+                        <p className="text-lg mt-4 font-semibold">{t('uploadPrompt')} 📁</p>
                     </div>
                 )}
                 <input
@@ -361,7 +362,7 @@ export default function DiagnosisTool() {
 
       <div className="mt-8 min-h-[400px]">
           {error && (
-              <Alert variant="destructive">
+              <Alert variant="destructive" className="glass-card bg-destructive/20 border-destructive/50">
                 <AlertTriangle className="h-4 w-4" />
                 <AlertTitle>{t('errorTitle')}</AlertTitle>
                 <AlertDescription>{error}</AlertDescription>
@@ -373,11 +374,11 @@ export default function DiagnosisTool() {
       <div className="fixed bottom-6 right-6 z-50">
         <Button 
             size="icon" 
-            className={`h-16 w-16 rounded-full shadow-lg transition-all transform hover:scale-110 ${listening ? 'bg-destructive/80' : 'bg-primary'}`}
+            className={`h-16 w-16 rounded-full shadow-2xl transition-all transform hover:scale-110 ${listening ? 'bg-destructive/90 animate-pulse' : 'bg-accent'}`}
             onClick={handleMicClick}
             title={listening ? t('stopListening') : t('startListening')}
         >
-                <Mic className={`h-8 w-8 text-primary-foreground transition-all ${listening ? 'scale-125' : ''}`} />
+                <Mic className={`h-8 w-8 text-accent-foreground transition-all ${listening ? 'scale-125' : ''}`} />
         </Button>
         {listening && <p className="fixed bottom-24 right-6 text-sm bg-background/80 px-2 py-1 rounded-md shadow-lg">{t('listening')}</p>}
       </div>
