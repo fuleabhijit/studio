@@ -19,11 +19,11 @@ const MarketPriceSchema = z.object({
 
 const PriceAlertSchema = z.object({
     commodity: z.string().describe("The name of the commodity being analyzed."),
-    priceRange: z.string().describe("The current price range, e.g., '15-20'"),
+    priceRange: z.string().describe("The current price range, e.g., '15-20' or 'Could not retrieve prices' if no data is found."),
     trend: z.enum(['▲', '▼', '-']).describe("The price trend compared to the previous day: '▲' for up, '▼' for down, '-' for stable."),
-    bestMarket: z.string().describe("The name of the market with the highest price."),
-    bestPrice: z.number().describe("The price at the best market."),
-    advice: z.enum(['Hold', 'Sell Now']).describe("The recommended action for the farmer."),
+    bestMarket: z.string().describe("The name of the market with the highest price. Should be 'N/A' if no data."),
+    bestPrice: z.number().describe("The price at the best market. Should be 0 if no data."),
+    advice: z.string().describe("The recommended action for the farmer, e.g., 'Hold' or 'Sell Now'."),
     reason: z.string().describe("A brief reason for the advice."),
 });
 export type PriceAlert = z.infer<typeof PriceAlertSchema>;
@@ -47,8 +47,8 @@ const getLatestPricesForCommodity = ai.defineTool(
             throw new Error('Server is not configured for market price lookups.');
         }
 
-        const resourceId = '9ef84268-d588-465a-a308-a864a43d0070'; // A common resource for market prices
-        const limit = 50; // Fetch a decent number of recent records
+        const resourceId = '9ef84268-d588-465a-a308-a864a43d0070';
+        const limit = 100;
         const url = `https://api.data.gov.in/resource/${resourceId}?api-key=${apiKey}&format=json&limit=${limit}&filters[commodity]=${encodeURIComponent(commodity)}`;
 
         try {
@@ -66,10 +66,8 @@ const getLatestPricesForCommodity = ai.defineTool(
             }
             
             const parsedRecords = data.records.map((record: any) => {
-                // API Date format is DD/MM/YYYY
                 const dateParts = record.arrival_date.split('/');
                 if (dateParts.length !== 3) return null;
-                // new Date(YYYY, MM, DD) - month is 0-indexed
                 const arrivalDate = new Date(Number(dateParts[2]), Number(dateParts[1]) - 1, Number(dateParts[0]));
 
                 const price = parseInt(record.modal_price, 10);
@@ -81,12 +79,11 @@ const getLatestPricesForCommodity = ai.defineTool(
                     district: record.district,
                     market: record.market,
                     price,
-                    date: arrivalDate.toLocaleDateString('en-CA'), // YYYY-MM-DD for consistency
+                    date: arrivalDate.toISOString().split('T')[0],
                 };
             }).filter((r: any): r is z.infer<typeof MarketPriceSchema> => r !== null);
             
-            // Return up to 10 most recent valid records
-            return parsedRecords.slice(0, 10);
+            return parsedRecords;
 
         } catch (error) {
             console.error('Error fetching or parsing market data:', error);
@@ -103,16 +100,16 @@ const priceAlertPrompt = ai.definePrompt({
     input: { schema: GetLatestPricesInputSchema },
     output: { schema: PriceAlertSchema },
     prompt: `You are an agricultural market analyst. A farmer wants to know the current prices for {{{commodity}}}.
-    First, use the getLatestPricesForCommodity tool to fetch the latest data for the specified commodity from live government APIs.
-    Then, analyze these prices and provide a summary for the farmer.
     
-    1. Identify the commodity in your response.
-    2. Calculate the current price range for today based on the most recent data.
-    3. Compare today's average price with yesterday's to determine the trend (▲ for up, ▼ for down, - for stable). If there's no data for yesterday, mark as '-'.
-    4. Identify the market with the best price today.
-    5. Provide clear advice to "Hold" or "Sell Now" with a brief, simple reason. Base your advice on price trends and volatility.
+    1.  First, use the \`getLatestPricesForCommodity\` tool to fetch the latest data for the specified commodity.
+    2.  **IMPORTANT**: If the tool returns NO records for the specific commodity (e.g., "Potato"), automatically try a more general category. For example, if "Potato" fails, try "Vegetable". If "Wheat" fails, try "Cereals". Use your judgment for the best fallback category. Use the tool again with this general category.
+    3.  Analyze the prices from the successful tool call and provide a summary for the farmer.
+    4.  Calculate the current price range based on the most recent data.
+    5.  Compare today's average price with yesterday's to determine the trend (▲ for up, ▼ for down, - for stable). If there's no data for yesterday, mark as '-'.
+    6.  Identify the market with the best price today.
+    7.  Provide clear advice to "Hold" or "Sell Now" with a brief, simple reason. Base your advice on price trends and volatility.
     
-    If no data is returned from the tool, state that you could not retrieve the prices and do not fill the other fields.
+    If no data is returned from the tool even after trying a general category, state that you could not retrieve the prices and do not fill the other fields (use "N/A", 0, or appropriate defaults).
     Respond ONLY with a JSON object that strictly adheres to the PriceAlertSchema.`,
 });
 

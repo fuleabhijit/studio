@@ -14,7 +14,7 @@ import type { PriceAlert } from '@/ai/flows/get-market-price-alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 
-const availableCrops = ["Tomato", "Onion", "Potato", "Wheat"];
+const availableCrops = ["Tomato", "Onion", "Potato", "Wheat", "Rice", "Cotton", "Maize", "Soyabean"];
 
 export default function PricesPage() {
     const searchParams = useSearchParams();
@@ -113,13 +113,13 @@ export default function PricesPage() {
                                 <div className="flex items-center gap-4">
                                     <DollarSign className="w-6 h-6 text-accent"/>
                                     <div>
-                                        <p className="font-semibold">Price Range: {result.priceRange} INR/kg <span className={result.trend === '▲' ? 'text-success' : result.trend === '▼' ? 'text-destructive' : ''}>{result.trend}</span></p>
+                                        <p className="font-semibold">Price Range: {result.priceRange} INR/quintal <span className={result.trend === '▲' ? 'text-success' : result.trend === '▼' ? 'text-destructive' : ''}>{result.trend}</span></p>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-4">
                                      <ShoppingCart className="w-6 h-6 text-accent"/>
                                      <div>
-                                        <p className="font-semibold">Best Market: {result.bestMarket} at {result.bestPrice} INR/kg</p>
+                                        <p className="font-semibold">Best Market: {result.bestMarket} at {result.bestPrice} INR/quintal</p>
                                      </div>
                                 </div>
                                 <div className="flex items-start gap-4">
@@ -137,5 +137,3 @@ export default function PricesPage() {
         </div>
     );
 }
-
-    
