@@ -13,7 +13,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import Header from '@/components/agrimedic/Header';
@@ -26,7 +25,6 @@ import { LoaderCircle, AlertTriangle, ListChecks, FileText, Sparkles, ExternalLi
 import { useGeolocationContext } from '@/context/GeolocationContext';
 
 const incomeBrackets = ["Below 1 Lakh", "1-5 Lakhs", "5-10 Lakhs", "Above 10 Lakhs"];
-const professions = ["Farmer", "Student", "Entrepreneur", "Woman Entrepreneur", "Unemployed", "Other"];
 
 export default function SchemesPage() {
     const { t } = useLanguage();
@@ -38,24 +36,20 @@ export default function SchemesPage() {
 
     const formSchema = z.object({
         state: z.string().min(1, { message: "State is required." }),
-        profession: z.string().min(1, { message: "Profession is required." }),
         annualIncome: z.string().min(1, { message: "Annual income is required." }),
         category: z.enum(['General', 'OBC', 'SC', 'ST']).optional(),
         landHolding: z.coerce.number().positive({ message: "Please enter a valid number." }).optional().or(z.literal('')),
         crop: z.string().optional(),
-        query: z.string().min(5, { message: "Please describe your need in a few more words." }),
     });
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
             state: '',
-            profession: '',
             annualIncome: '',
             category: undefined,
             landHolding: '',
             crop: '',
-            query: '',
         },
     });
 
@@ -73,6 +67,8 @@ export default function SchemesPage() {
         const apiInput = {
             ...values,
             landHolding: values.landHolding ? Number(values.landHolding) : undefined,
+            profession: 'Farmer',
+            query: `schemes for farmers in ${values.state}`,
         };
 
         const response = await getGovtSchemes(apiInput);
@@ -96,13 +92,13 @@ export default function SchemesPage() {
             <Header />
             <main className="flex-grow container mx-auto px-4 py-8 md:py-12">
                 <div className="text-center mb-8">
-                    <h1 className="text-3xl md:text-4xl font-bold">Find Government Schemes</h1>
+                    <h1 className="text-3xl md:text-4xl font-bold">Find Government Schemes for Farmers</h1>
                     <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">Enter your details to find schemes you might be eligible for.</p>
                 </div>
                 
                 <Card className="max-w-4xl mx-auto glass-card shadow-lg">
                     <CardHeader>
-                        <CardTitle className="text-2xl">Your Profile</CardTitle>
+                        <CardTitle className="text-2xl">Your Farmer Profile</CardTitle>
                         <CardDescription>Please enter the following details to help us find the best government schemes for you.</CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -124,28 +120,6 @@ export default function SchemesPage() {
                                                     <SelectContent>
                                                         {IndianStates.map(state => (
                                                             <SelectItem key={state} value={state}>{state}</SelectItem>
-                                                        ))}
-                                                    </SelectContent>
-                                                </Select>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name="profession"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Profession / Category *</FormLabel>
-                                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                                    <FormControl>
-                                                        <SelectTrigger className="bg-background/50">
-                                                            <SelectValue placeholder="Select your profession" />
-                                                        </SelectTrigger>
-                                                    </FormControl>
-                                                    <SelectContent>
-                                                        {professions.map(p => (
-                                                            <SelectItem key={p} value={p}>{p}</SelectItem>
                                                         ))}
                                                     </SelectContent>
                                                 </Select>
@@ -225,24 +199,7 @@ export default function SchemesPage() {
                                         )}
                                     />
                                 </div>
-                                 <FormField
-                                    control={form.control}
-                                    name="query"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>What are you looking for?</FormLabel>
-                                                <FormControl>
-                                                    <Textarea
-                                                        placeholder={'e.g., "drip irrigation subsidy", "crop insurance", "startup loan"'}
-                                                        className="pr-12 bg-background/50"
-                                                        rows={3}
-                                                        {...field}
-                                                    />
-                                                </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
+                                
                                 <Button type="submit" disabled={isLoading} className="w-full text-lg py-6 bg-accent text-accent-foreground hover:bg-accent/90">
                                     {isLoading ? (
                                         <>

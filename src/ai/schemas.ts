@@ -51,12 +51,12 @@ export const AnalyzeCropImageOutputSchema = z.object({
 
 export const FindGovtSchemesInputSchema = z.object({
   state: z.string().describe("The user's state or union territory in India."),
-  profession: z.string().describe("The user's profession (e.g., Farmer, Student)."),
   annualIncome: z.string().describe("The user's annual income bracket."),
   category: z.enum(['General', 'OBC', 'SC', 'ST']).optional().describe("The user's social category."),
   landHolding: z.number().optional().describe("The user's land holding size in acres (for farmers)."),
   crop: z.string().optional().describe('The primary crop the user cultivates (for farmers).'),
-  query: z.string().describe('The specific need or query the user has about government schemes (e.g., "drip irrigation subsidy").'),
+  profession: z.string().optional(),
+  query: z.string().optional(),
 });
 
 
