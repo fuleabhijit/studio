@@ -31,17 +31,6 @@ const extractCropName = (text: string): string | null => {
   return null;
 }
 
-const extractStateName = (text: string): string | null => {
-    const lowerText = text.toLowerCase();
-    for (const state of IndianStates) {
-        if (lowerText.includes(state.toLowerCase())) {
-            return state;
-        }
-    }
-    return null;
-}
-
-
 export default function DiagnosisTool() {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -229,7 +218,7 @@ export default function DiagnosisTool() {
   const renderResult = () => {
     if (!result) return null;
     
-    const { diagnosis, marketAnalysis, governmentSchemes } = result;
+    const { diagnosis, marketAnalysis } = result;
 
     const getRemedyTypeBadgeVariant = (type: 'Organic' | 'Chemical' | 'Preventive'): BadgeProps['variant'] => {
         switch (type) {
@@ -304,22 +293,6 @@ export default function DiagnosisTool() {
                             <div className="flex items-center gap-3"><ShoppingCart className="w-5 h-5 text-accent"/> <p>Range: {marketAnalysis.priceRange} INR/kg</p></div>
                             <div className="flex items-center gap-3"><TrendingUp className="w-5 h-5 text-accent"/> <p>Trend: {marketAnalysis.trend}</p></div>
                             <div className="flex items-center gap-3"><Sparkles className="w-5 h-5 text-accent"/> <p>Advice: <strong>{marketAnalysis.advice}</strong> - {marketAnalysis.reason}</p></div>
-                        </CardContent>
-                    </Card>
-                )}
-                {governmentSchemes && governmentSchemes.schemes.length > 0 && (
-                    <Card className="glass-card">
-                         <CardHeader className="flex-row items-center gap-4 space-y-0">
-                            <Sparkles className="w-8 h-8 text-primary" />
-                            <CardTitle className="text-2xl">{t('governmentSchemesTitle')}</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-3">
-                            {governmentSchemes.schemes.map((scheme, index) => (
-                                <div key={index} className="p-3 rounded-md bg-background/50">
-                                    <h4 className="font-bold">{scheme.name}</h4>
-                                    <p className="text-muted-foreground mt-1 text-sm line-clamp-2">{scheme.description}</p>
-                                </div>
-                            ))}
                         </CardContent>
                     </Card>
                 )}
@@ -413,5 +386,3 @@ export default function DiagnosisTool() {
     </div>
   );
 }
-
-    

@@ -19,7 +19,6 @@ export const DiseaseDiagnosisSchema = z.object({
 export const ComprehensiveDiagnosisOutputSchema = z.object({
   diagnosis: DiseaseDiagnosisSchema,
   marketAnalysis: z.any().optional().describe('Market price analysis for the identified plant/crop.'),
-  governmentSchemes: z.any().optional().describe('Relevant government schemes for the identified plant/crop.'),
 });
 export type ComprehensiveDiagnosisOutput = z.infer<typeof ComprehensiveDiagnosisOutputSchema>;
 
@@ -48,30 +47,6 @@ export const AnalyzeCropImageOutputSchema = z.object({
   ).describe('A list of recommended remedies.'),
   notes: z.string().optional().describe('Other general notes, preventive measures, or important considerations for the farmer.'),
 });
-
-export const FindGovtSchemesInputSchema = z.object({
-  state: z.string().describe("The user's state or union territory in India."),
-  annualIncome: z.string().describe("The user's annual income bracket."),
-  category: z.enum(['General', 'OBC', 'SC', 'ST']).optional().describe("The user's social category."),
-  landHolding: z.number().optional().describe("The user's land holding size in acres (for farmers)."),
-  crop: z.string().optional().describe('The primary crop the user cultivates (for farmers).'),
-  profession: z.string().optional(),
-  query: z.string().optional(),
-});
-
-
-export const GovtSchemesOutputSchema = z.object({
-  schemes: z.array(
-    z.object({
-      name: z.string().describe('The official name of the government scheme.'),
-      description: z.string().describe('A simple, easy-to-understand summary of the scheme and its purpose.'),
-      eligibility: z.array(z.string()).describe('A list of key eligibility criteria for the user to qualify.'),
-      benefits: z.string().describe('A description of the benefits provided by the scheme (e.g., subsidy amount, equipment provided).'),
-      applicationLink: z.string().url().describe("The direct official URL to the scheme's application portal or information page."),
-    })
-  ).describe("A list of relevant government schemes based on the user's profile and query."),
-});
-
 
 export const AnswerFarmerQueryInputSchema = z.object({
   query: z.string().describe('The question asked by the farmer.'),

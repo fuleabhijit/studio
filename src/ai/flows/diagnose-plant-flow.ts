@@ -7,7 +7,6 @@
  */
 
 import {ai} from '@/ai/genkit';
-import { findGovtSchemes } from './find-govt-schemes';
 import { getMarketPriceAlertFlowWrapper } from './get-market-price-alert';
 import { translateText } from './translate-text';
 import {
@@ -64,18 +63,16 @@ const diagnosePlantFlow = ai.defineFlow(
       return { diagnosis: diagnosis || { isPlant: false, plantName: 'N/A', diseaseIdentification: { diseaseDetected: false, diseaseName: 'N/A' }, remedySuggestions: [] } };
     }
 
-    let marketAnalysis, governmentSchemes;
+    let marketAnalysis;
 
-    // 2. Concurrently fetch market prices and government schemes
+    // 2. Concurrently fetch market prices
     // We use the identified plantName for these lookups.
     const plantName = diagnosis.plantName;
     if (plantName && plantName.toLowerCase() !== 'n/a') {
-        const [marketResult, schemesResult] = await Promise.all([
+        const [marketResult] = await Promise.all([
             getMarketPriceAlertFlowWrapper({ commodity: plantName }).catch(e => { console.error("Market analysis failed:", e); return null; }),
-            findGovtSchemes({ state: 'Maharashtra', crop: plantName, query: `schemes for ${plantName}` }).catch(e => { console.error("Scheme lookup failed:", e); return null; })
         ]);
         marketAnalysis = marketResult;
-        governmentSchemes = schemesResult;
     }
 
     // 3. Translate if the language is not English
@@ -92,7 +89,6 @@ const diagnosePlantFlow = ai.defineFlow(
         addText(diagnosis.diseaseIdentification.diseaseName);
         diagnosis.remedySuggestions.forEach(r => { addText(r.name); addText(r.description); });
         if(marketAnalysis) { addText(marketAnalysis.advice); addText(marketAnalysis.reason); }
-        if(governmentSchemes) { governmentSchemes.schemes.forEach(s => { addText(s.name); addText(s.description); }); }
 
         const uniqueTexts = [...new Set(textsToTranslate)];
         
@@ -120,19 +116,12 @@ const diagnosePlantFlow = ai.defineFlow(
                 marketAnalysis.advice = translateField(marketAnalysis.advice);
                 marketAnalysis.reason = translateField(marketAnalysis.reason);
             }
-            if (governmentSchemes) {
-                governmentSchemes.schemes.forEach(s => {
-                    s.name = translateField(s.name);
-                    s.description = translateField(s.description);
-                });
-            }
         }
     }
     
     return {
       diagnosis,
       marketAnalysis,
-      governmentSchemes,
     };
   }
 );
