@@ -65,13 +65,13 @@ const getLatestPricesForCommodity = ai.defineTool(
                 return [];
             }
             
-            const today = new Date();
-            const todayStr = today.toLocaleDateString('en-CA'); // YYYY-MM-DD
-            const yesterday = new Date(today);
-            yesterday.setDate(today.getDate() - 1);
-            
             const parsedRecords = data.records.map((record: any) => {
-                const arrivalDate = new Date(record.arrival_date.split('/').reverse().join('-')); // DD/MM/YYYY to YYYY-MM-DD
+                // API Date format is DD/MM/YYYY
+                const dateParts = record.arrival_date.split('/');
+                if (dateParts.length !== 3) return null;
+                // new Date(YYYY, MM, DD) - month is 0-indexed
+                const arrivalDate = new Date(Number(dateParts[2]), Number(dateParts[1]) - 1, Number(dateParts[0]));
+
                 const price = parseInt(record.modal_price, 10);
                 if (isNaN(price) || price === 0) return null;
 
@@ -81,12 +81,12 @@ const getLatestPricesForCommodity = ai.defineTool(
                     district: record.district,
                     market: record.market,
                     price,
-                    date: arrivalDate.toLocaleDateString('en-CA'),
+                    date: arrivalDate.toLocaleDateString('en-CA'), // YYYY-MM-DD for consistency
                 };
             }).filter((r: any): r is z.infer<typeof MarketPriceSchema> => r !== null);
             
-            // Return a mix of today's and yesterday's prices if available
-            return parsedRecords.slice(0, 10); // Return a subset to avoid overwhelming the model
+            // Return up to 10 most recent valid records
+            return parsedRecords.slice(0, 10);
 
         } catch (error) {
             console.error('Error fetching or parsing market data:', error);
