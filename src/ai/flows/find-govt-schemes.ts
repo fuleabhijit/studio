@@ -2,9 +2,9 @@
 'use server';
 
 /**
- * @fileOverview A Genkit flow for finding relevant government agricultural schemes for farmers.
+ * @fileOverview A Genkit flow for finding relevant government schemes for Indian citizens.
  *
- * - findGovtSchemes - A function that takes a farmer's profile and query and returns a list of schemes.
+ * - findGovtSchemes - A function that takes a user's profile and query and returns a list of schemes.
  * - FindGovtSchemesInput - The input type for the findGovtSchemes function.
  * - FindGovtSchemesOutput - The return type for the findGovtSchemes function.
  */
@@ -25,25 +25,27 @@ const prompt = ai.definePrompt({
   model: 'googleai/gemini-2.0-flash',
   input: {schema: FindGovtSchemesInputSchema},
   output: {schema: GovtSchemesOutputSchema},
-  prompt: `You are an expert agricultural advisor specializing in Indian government schemes for farmers.
-A farmer has provided their profile and a query. Your task is to identify and explain relevant government schemes.
+  prompt: `You are an expert advisor on Indian government schemes.
+A user has provided their profile. Your task is to identify and explain relevant government schemes.
 
-Farmer's Profile:
+User's Profile:
 - State: {{{state}}}
+- Profession/Category: {{{profession}}}
+- Annual Income Bracket: {{{annualIncome}}}
+{{#if category}}- Social Category: {{{category}}}{{/if}}
 {{#if crop}}- Primary Crop: {{{crop}}}{{/if}}
 {{#if landHolding}}- Land Holding: {{{landHolding}}} acres{{/if}}
-{{#if category}}- Category: {{{category}}}{{/if}}
 
-Farmer's Query: "{{{query}}}"
+User's Query: "{{{query}}}"
 
-Based on this information, provide a list of the most relevant schemes. For each scheme, you must provide:
+Based on this comprehensive information, provide a list of the most relevant schemes. For each scheme, you must provide:
 1. The official name of the scheme.
 2. A simple, easy-to-understand summary of the scheme and its purpose.
 3. A list of key eligibility criteria.
-4. A description of the benefits provided (e.g., subsidy amount, equipment provided).
+4. A description of the benefits provided (e.g., subsidy amount, loan details, equipment provided).
 5. The direct official URL to the scheme's application portal or information page.
 
-Focus on schemes that are highly relevant to the farmer's specific query and profile. If the query is broad, provide general schemes applicable to their profile.
+Focus on schemes that are highly relevant to the user's specific query and profile.
 
 Respond ONLY with a JSON object that strictly adheres to the GovtSchemesOutputSchema.`,
 });
