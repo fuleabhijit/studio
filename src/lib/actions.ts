@@ -1,15 +1,19 @@
+
 'use server';
 
 import { diagnosePlant } from '@/ai/flows/diagnose-plant-flow';
 import { getMarketPriceAlertFlowWrapper, type PriceAlert } from '@/ai/flows/get-market-price-alert';
 import { answerFarmerQuery } from '@/ai/flows/answer-farmer-query';
 import { textToSpeech } from '@/ai/flows/text-to-speech';
+import { escalateToExpert as escalateToExpertFlow } from '@/ai/flows/escalate-to-expert';
 import { z } from 'zod';
 import { 
   ComprehensiveDiagnosisInputSchema, 
   type ComprehensiveDiagnosisOutput,
   AnswerFarmerQueryInputSchema,
   type AnswerFarmerQueryOutput,
+  EscalationInputSchema,
+  type EscalationOutput
 } from '@/ai/schemas';
 
 export async function getComprehensiveDiagnosis(
@@ -72,4 +76,17 @@ export async function getFarmerQueryAnswer(
     }
     return { error: 'An unexpected error occurred while generating the answer.' };
   }
+}
+
+export async function escalateToExpert(
+    input: z.infer<typeof EscalationInputSchema>
+): Promise<{ data?: EscalationOutput; error?: string }> {
+    try {
+        const validatedInput = EscalationInputSchema.parse(input);
+        const result = await escalateToExpertFlow(validatedInput);
+        return { data: result };
+    } catch (error) {
+        console.error('Error in escalateToExpert action:', error);
+        return { error: 'Failed to prepare escalation. Please try again.' };
+    }
 }

@@ -4,7 +4,7 @@
 import 'regenerator-runtime/runtime';
 import { useState, useRef, type ChangeEvent, useEffect } from 'react';
 import Image from 'next/image';
-import { Camera, LoaderCircle, AlertTriangle, HeartPulse, FlaskConical, Volume2, Mic, Flower2, Share2, Save, ShoppingCart, TrendingUp, Sparkles, X, RotateCcw } from 'lucide-react';
+import { Camera, LoaderCircle, AlertTriangle, HeartPulse, FlaskConical, Volume2, Mic, Flower2, Share2, Save, ShoppingCart, TrendingUp, Sparkles, X, RotateCcw, UserSquare } from 'lucide-react';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 import { useRouter } from 'next/navigation';
 
@@ -12,11 +12,22 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge, type BadgeProps } from '@/components/ui/badge';
-import { getComprehensiveDiagnosis, getSpeechFromText, getMarketPriceAlert } from '@/lib/actions';
+import { getComprehensiveDiagnosis, getSpeechFromText, escalateToExpert as escalateToAction } from '@/lib/actions';
 import type { ComprehensiveDiagnosisOutput } from '@/ai/schemas';
+import type { EscalationOutput } from '@/ai/flows/escalate-to-expert';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/context/LanguageContext';
-import { IndianStates } from '@/lib/indian-states';
+import { useGeolocationContext } from '@/context/GeolocationContext';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 
 type TTSSection = 'diagnosis' | 'remedies';
 
@@ -35,15 +46,20 @@ export default function DiagnosisTool() {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isEscalating, setIsEscalating] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<ComprehensiveDiagnosisOutput | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   const { t, language } = useLanguage();
+  const { state: geoState } = useGeolocationContext();
   const [ttsLoading, setTtsLoading] = useState<TTSSection | null>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
   const [lastAudioSrc, setLastAudioSrc] = useState<string | null>(null);
   const router = useRouter();
+
+  const [escalationDetails, setEscalationDetails] = useState<EscalationOutput | null>(null);
+  const [showEscalationModal, setShowEscalationModal] = useState(false);
 
 
   const {
@@ -147,6 +163,33 @@ export default function DiagnosisTool() {
     }
     setIsLoading(false);
   };
+  
+  const handleEscalate = async () => {
+    if (!result || !imagePreview || !geoState) {
+        toast({ variant: 'destructive', title: "Cannot Escalate", description: "Not enough information to escalate. Please perform a diagnosis first and ensure location services are enabled."});
+        return;
+    }
+
+    setIsEscalating(true);
+    const { diagnosis } = result;
+
+    const response = await escalateToAction({
+        plantName: diagnosis.plantName,
+        diseaseName: diagnosis.diseaseIdentification.diseaseName,
+        remedies: diagnosis.remedySuggestions.map(r => r.name),
+        photoDataUri: imagePreview,
+        userState: geoState,
+    });
+
+    if (response.error) {
+        toast({ variant: 'destructive', title: "Escalation Failed", description: response.error });
+    } else if (response.data) {
+        setEscalationDetails(response.data);
+        setShowEscalationModal(true);
+    }
+    setIsEscalating(false);
+  };
+
 
   const handleClear = () => {
     setResult(null);
@@ -296,9 +339,12 @@ export default function DiagnosisTool() {
                         </CardContent>
                     </Card>
                 )}
-                 <div className="flex items-center gap-4">
-                    <Button onClick={handleShare} className="w-full text-lg py-6" variant="outline"><Share2 className="mr-2 h-5 w-5"/> {t('shareButton')}</Button>
-                    <Button className="w-full text-lg py-6" variant="outline"><Save className="mr-2 h-5 w-5"/> {t('saveButton')}</Button>
+                 <div className="grid grid-cols-2 gap-4">
+                    <Button onClick={handleShare} className="text-lg py-6" variant="outline"><Share2 className="mr-2 h-5 w-5"/> {t('shareButton')}</Button>
+                    <Button onClick={handleEscalate} disabled={isEscalating} className="text-lg py-6" variant="secondary">
+                        {isEscalating ? <LoaderCircle className="w-5 h-5 animate-spin mr-2" /> : <UserSquare className="mr-2 h-5 w-5"/>}
+                        Escalate to Expert
+                    </Button>
                  </div>
             </div>
         </div>
@@ -382,6 +428,29 @@ export default function DiagnosisTool() {
         </Button>
         {listening && <p className="fixed bottom-24 right-6 text-sm bg-background/80 px-2 py-1 rounded-md shadow-lg">{t('listening')}</p>}
       </div>
+
+       <AlertDialog open={showEscalationModal} onOpenChange={setShowEscalationModal}>
+          <AlertDialogContent>
+              <AlertDialogHeader>
+                  <AlertDialogTitle>Escalate to Agricultural Expert</AlertDialogTitle>
+                  <AlertDialogDescription>
+                      Copy the message below and send it to the expert via email or WhatsApp.
+                  </AlertDialogDescription>
+              </AlertDialogHeader>
+              <div className="p-4 bg-muted rounded-md space-y-4">
+                  <p><strong>Expert:</strong> {escalationDetails?.expertName}</p>
+                  <p><strong>Contact:</strong> {escalationDetails?.expertContact}</p>
+                  <p className="text-sm border-t pt-4 mt-4 whitespace-pre-wrap">{escalationDetails?.escalationMessage}</p>
+              </div>
+              <AlertDialogFooter>
+                  <AlertDialogAction onClick={() => {
+                      navigator.clipboard.writeText(escalationDetails?.escalationMessage || '');
+                      toast({ title: 'Message Copied!'});
+                      setShowEscalationModal(false);
+                  }}>Copy Message & Close</AlertDialogAction>
+              </AlertDialogFooter>
+          </AlertDialogContent>
+      </AlertDialog>
 
       <audio ref={audioRef} className="hidden" onEnded={() => setTtsLoading(null)} />
     </div>

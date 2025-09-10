@@ -1,3 +1,4 @@
+
 import { z } from 'zod';
 
 export const DiseaseDiagnosisSchema = z.object({
@@ -58,3 +59,19 @@ export const AnswerFarmerQueryOutputSchema = z.object({
     answer: z.string().describe('A helpful and actionable answer to the farmer\'s question.'),
 });
 export type AnswerFarmerQueryOutput = z.infer<typeof AnswerFarmerQueryOutputSchema>;
+
+export const EscalationInputSchema = z.object({
+  plantName: z.string(),
+  diseaseName: z.string(),
+  remedies: z.array(z.string()),
+  photoDataUri: z.string(),
+  userState: z.string(),
+});
+export type EscalationInput = z.infer<typeof EscalationInputSchema>;
+
+export const EscalationOutputSchema = z.object({
+    expertName: z.string(),
+    expertContact: z.string(),
+    escalationMessage: z.string().describe("A concise, well-formatted message to send to the expert."),
+});
+export type EscalationOutput = z.infer<typeof EscalationOutputSchema>;
