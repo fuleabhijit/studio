@@ -166,7 +166,7 @@ export default function Home() {
                 <AccordionItem value="item-3">
                   <AccordionTrigger className="text-lg">What languages does the app support?</AccordionTrigger>
                   <AccordionContent className="text-base text-muted-foreground">
-                    We support English and several regional Indian languages including Hindi, Marathi, Tamil, and more. You can switch languages at any time using the selector in the header.
+                    We've now expanded our language support! The app is available in English and several regional Indian languages, including Hindi, Marathi, Tamil, and more. You can switch languages at any time using the selector in the header.
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>

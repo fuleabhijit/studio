@@ -177,7 +177,7 @@ export const translations: Translations = {
     remedyRecommendationsTitle: 'उपाय सूचना',
     speakNowPrompt: 'किंवा, बोलण्यासाठी माइकवर टॅप करा',
     voiceCommandDiagnose: 'निदान',
-    voiceCommandCheckPrice: 'ची किंમત',
+    voiceCommandCheckPrice: 'ची किंमत',
     voiceCommandCheck: 'वनस्पती तपासा',
     voiceCommandWhatsWrong: 'माझ्या पिकात काय चूक आहे',
     startListening: 'ऐकण्यास प्रारंभ करा',
