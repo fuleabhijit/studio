@@ -9,4 +9,3 @@ import '@/ai/flows/text-to-speech.ts';
 import '@/ai/flows/get-market-price-alert.ts';
 import '@/ai/flows/answer-farmer-query.ts';
 import '@/ai/flows/escalate-to-expert.ts';
-

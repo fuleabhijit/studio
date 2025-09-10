@@ -9,12 +9,15 @@
 import {ai} from '@/ai/genkit';
 import { getMarketPriceAlertFlowWrapper } from './get-market-price-alert';
 import { translateText } from './translate-text';
+import { suggestTreatmentOptions } from './suggest-treatment-options';
 import {
     ComprehensiveDiagnosisInputSchema,
     ComprehensiveDiagnosisOutputSchema,
-    DiseaseDiagnosisSchema
+    DiseaseDiagnosisSchema,
+    TreatmentSuggestionSchema,
 } from '@/ai/schemas';
 import type { ComprehensiveDiagnosisInput, ComprehensiveDiagnosisOutput } from '@/ai/schemas';
+import { z } from 'zod';
 
 const languageMap: Record<string, string> = {
     en: 'English',
@@ -55,7 +58,7 @@ const diagnosePlantFlow = ai.defineFlow(
     inputSchema: ComprehensiveDiagnosisInputSchema,
     outputSchema: ComprehensiveDiagnosisOutputSchema,
   },
-  async ({ photoDataUri, language }) => {
+  async ({ photoDataUri, language, location }) => {
     // 1. Get initial diagnosis in English
     const { output: diagnosis } = await diagnosisPrompt({ photoDataUri });
     if (!diagnosis || !diagnosis.isPlant) {
@@ -64,16 +67,33 @@ const diagnosePlantFlow = ai.defineFlow(
     }
 
     let marketAnalysis;
+    let treatmentSuggestions: z.infer<typeof TreatmentSuggestionSchema>[] | undefined;
 
-    // 2. Concurrently fetch market prices
-    // We use the identified plantName for these lookups.
+    // 2. Concurrently fetch market prices and treatment suggestions
     const plantName = diagnosis.plantName;
+    const diseaseName = diagnosis.diseaseIdentification.diseaseName;
+
+    const promises = [];
+
     if (plantName && plantName.toLowerCase() !== 'n/a') {
-        const [marketResult] = await Promise.all([
-            getMarketPriceAlertFlowWrapper({ commodity: plantName }).catch(e => { console.error("Market analysis failed:", e); return null; }),
-        ]);
-        marketAnalysis = marketResult;
+        promises.push(
+            getMarketPriceAlertFlowWrapper({ commodity: plantName }).catch(e => { console.error("Market analysis failed:", e); return null; })
+        );
     }
+
+    if (diseaseName && diseaseName.toLowerCase() !== 'n/a' && location) {
+        promises.push(
+            suggestTreatmentOptions({ diseaseName: diseaseName, location: location }).catch(e => { console.error("Treatment suggestion failed:", e); return null; })
+        );
+    }
+    
+    const [marketResult, treatmentResult] = await Promise.all(promises);
+
+    marketAnalysis = marketResult;
+    if (treatmentResult) {
+        treatmentSuggestions = treatmentResult.treatmentOptions;
+    }
+
 
     // 3. Translate if the language is not English
     if (language !== 'en' && languageMap[language]) {
@@ -89,6 +109,7 @@ const diagnosePlantFlow = ai.defineFlow(
         addText(diagnosis.diseaseIdentification.diseaseName);
         diagnosis.remedySuggestions.forEach(r => { addText(r.name); addText(r.description); });
         if(marketAnalysis) { addText(marketAnalysis.advice); addText(marketAnalysis.reason); }
+        if(treatmentSuggestions) { treatmentSuggestions.forEach(t => { addText(t.name); addText(t.description); addText(t.availability); addText(t.cost); }); }
 
         const uniqueTexts = [...new Set(textsToTranslate)];
         
@@ -116,12 +137,21 @@ const diagnosePlantFlow = ai.defineFlow(
                 marketAnalysis.advice = translateField(marketAnalysis.advice);
                 marketAnalysis.reason = translateField(marketAnalysis.reason);
             }
+            if (treatmentSuggestions) {
+                treatmentSuggestions.forEach(t => {
+                    t.name = translateField(t.name);
+                    t.description = translateField(t.description);
+                    t.availability = translateField(t.availability);
+                    t.cost = translateField(t.cost);
+                });
+            }
         }
     }
     
     return {
       diagnosis,
       marketAnalysis,
+      treatmentSuggestions,
     };
   }
 );

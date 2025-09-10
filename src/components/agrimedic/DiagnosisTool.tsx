@@ -4,7 +4,7 @@
 import 'regenerator-runtime/runtime';
 import { useState, useRef, type ChangeEvent, useEffect } from 'react';
 import Image from 'next/image';
-import { Camera, LoaderCircle, AlertTriangle, HeartPulse, FlaskConical, Volume2, Mic, Flower2, Share2, UserSquare, ShoppingCart, TrendingUp, Sparkles, X, RotateCcw } from 'lucide-react';
+import { Camera, LoaderCircle, AlertTriangle, HeartPulse, FlaskConical, Volume2, Mic, Flower2, Share2, UserSquare, ShoppingCart, TrendingUp, Sparkles, X, RotateCcw, Stethoscope } from 'lucide-react';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 import { useRouter } from 'next/navigation';
 
@@ -29,7 +29,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 
-type TTSSection = 'diagnosis' | 'remedies';
+type TTSSection = 'diagnosis' | 'remedies' | 'treatments';
 
 const extractCropName = (text: string): string | null => {
   const cropKeywords = ["tomato", "potato", "wheat", "onion", "rice", "cotton", "sugarcane", "maize"];
@@ -152,7 +152,7 @@ export default function DiagnosisTool() {
     setError(null);
     setResult(null);
 
-    const diagnosisResponse = await getComprehensiveDiagnosis({ photoDataUri: currentDataUri, language });
+    const diagnosisResponse = await getComprehensiveDiagnosis({ photoDataUri: currentDataUri, language, location: geoState || undefined });
     
     if (diagnosisResponse.error) {
         setError(diagnosisResponse.error);
@@ -212,6 +212,8 @@ export default function DiagnosisTool() {
       textToSpeak = `${t('diagnosisTitle')}. ${result.diagnosis.diseaseIdentification.diseaseName}.`;
     } else if (section === 'remedies' && result.diagnosis.remedySuggestions) {
       textToSpeak = result.diagnosis.remedySuggestions.map(r => `${r.name}. ${r.description}`).join(' ');
+    } else if (section === 'treatments' && result.treatmentSuggestions) {
+      textToSpeak = result.treatmentSuggestions.map(t => `${t.name}. ${t.description}. Available at ${t.availability}. Cost is ${t.cost}`).join(' ');
     }
     
     if (!textToSpeak) return;
@@ -261,7 +263,7 @@ export default function DiagnosisTool() {
   const renderResult = () => {
     if (!result) return null;
     
-    const { diagnosis, marketAnalysis } = result;
+    const { diagnosis, marketAnalysis, treatmentSuggestions } = result;
 
     const getRemedyTypeBadgeVariant = (type: 'Organic' | 'Chemical' | 'Preventive'): BadgeProps['variant'] => {
         switch (type) {
@@ -319,6 +321,32 @@ export default function DiagnosisTool() {
                                         <Badge variant={getRemedyTypeBadgeVariant(remedy.type)}>{remedy.type}</Badge>
                                     </div>
                                     <p className="text-muted-foreground mt-1 text-base">{remedy.description}</p>
+                                </div>
+                            ))}
+                        </CardContent>
+                    </Card>
+                )}
+
+                 {treatmentSuggestions && treatmentSuggestions.length > 0 && (
+                    <Card className="glass-card">
+                        <CardHeader className="flex-row items-start justify-between gap-4 space-y-0">
+                           <div className="flex items-center gap-4">
+                             <Stethoscope className="w-8 h-8 text-accent flex-shrink-0" />
+                             <CardTitle className="text-2xl">Treatment Suggestions</CardTitle>
+                           </div>
+                           <Button variant="ghost" size="icon" onClick={() => handlePlayTTS('treatments')} disabled={!!ttsLoading} className="rounded-full h-10 w-10">
+                             {ttsLoading === 'treatments' ? <LoaderCircle className="w-5 h-5 animate-spin" /> : <Volume2 className="w-5 h-5" />}
+                           </Button>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            {treatmentSuggestions.map((treatment, index) => (
+                                <div key={index} className="p-4 rounded-lg bg-background/50">
+                                    <h4 className="font-bold text-lg">{treatment.name}</h4>
+                                    <p className="text-muted-foreground mt-1 text-base">{treatment.description}</p>
+                                    <div className='flex justify-between mt-2'>
+                                      <Badge variant="outline">Availability: {treatment.availability}</Badge>
+                                      <Badge variant="outline">Cost: {treatment.cost}</Badge>
+                                    </div>
                                 </div>
                             ))}
                         </CardContent>

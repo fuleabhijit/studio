@@ -17,9 +17,18 @@ export const DiseaseDiagnosisSchema = z.object({
   ).describe('A list of recommended remedies.'),
 });
 
+export const TreatmentSuggestionSchema = z.object({
+    name: z.string().describe('The name of the treatment option.'),
+    description: z.string().describe('A detailed description of the treatment, including application instructions.'),
+    availability: z.string().describe('Information on local availability.'),
+    cost: z.string().describe('An estimate of the cost of the treatment.'),
+});
+
+
 export const ComprehensiveDiagnosisOutputSchema = z.object({
   diagnosis: DiseaseDiagnosisSchema,
   marketAnalysis: z.any().optional().describe('Market price analysis for the identified plant/crop.'),
+  treatmentSuggestions: z.array(TreatmentSuggestionSchema).optional().describe('A list of treatment options for the specified disease.'),
 });
 export type ComprehensiveDiagnosisOutput = z.infer<typeof ComprehensiveDiagnosisOutputSchema>;
 
@@ -30,6 +39,7 @@ export const ComprehensiveDiagnosisInputSchema = z.object({
       "A photo of a plant, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'"
     ),
   language: z.string().describe("The user's selected language (e.g., 'en', 'hi')."),
+  location: z.string().optional().describe("The user's location (e.g., 'Maharashtra')."),
 });
 export type ComprehensiveDiagnosisInput = z.infer<typeof ComprehensiveDiagnosisInputSchema>;
 
