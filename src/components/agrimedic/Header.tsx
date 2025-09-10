@@ -37,7 +37,7 @@ export default function Header() {
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-1">
           {navLinks.map((link) => (
-            <Button asChild key={link.href} variant={pathname === link.href ? "secondary" : "ghost"} className="transition-all duration-300">
+            <Button asChild key={link.href} variant={pathname === link.href ? "secondary" : "ghost"}>
               <Link href={link.href} className="flex items-center gap-2">
                 <link.icon className="h-5 w-5" />
                 <span>{link.label}</span>
@@ -109,7 +109,7 @@ function LanguageDropdown() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="flex items-center gap-2 transition-all duration-300" title={t('language')}>
+        <Button variant="ghost" className="flex items-center gap-2" title={t('language')}>
           <Globe className="h-5 w-5" />
           <span className="uppercase text-sm font-medium">{language}</span>
           <ChevronDown className="h-4 w-4 opacity-70" />
@@ -138,7 +138,6 @@ function ThemeToggle() {
         variant="ghost"
         size="icon"
         onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-        className="transition-all duration-300 transform hover:scale-110"
       >
         <Sun className="h-[1.3rem] w-[1.3rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
         <Moon className="absolute h-[1.3rem] w-[1.3rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
@@ -150,10 +149,8 @@ function ThemeToggle() {
 function LanguageButton({ lang, label }: { lang: 'en' | 'hi' | 'mr' | 'te' | 'bn' | 'ta' | 'gu' | 'kn' | 'ml', label: string }) {
     const { setLanguage, language } = useLanguage();
     return (
-        <Button onClick={() => setLanguage(lang)} variant={language === lang ? 'default' : 'outline'} className="w-full justify-center transition-all duration-300">
+        <Button onClick={() => setLanguage(lang)} variant={language === lang ? 'default' : 'outline'} className="w-full justify-center">
             {label}
         </Button>
     );
 }
-
-    

@@ -69,27 +69,29 @@ export default function PricesPage() {
                         <CardTitle className="text-2xl">Crop Price Analysis</CardTitle>
                         <CardDescription>Select a crop to get the latest mandi price intelligence.</CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-6 p-6">
-                        <Select onValueChange={setSelectedCrop} value={selectedCrop}>
-                            <SelectTrigger className="w-full text-lg py-6 bg-background/50">
-                                <SelectValue placeholder="Select a crop..." />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {availableCrops.map(crop => (
-                                    <SelectItem key={crop} value={crop} className="text-lg">{crop}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                        <Button onClick={handleFetchPrices} disabled={isLoading || !selectedCrop} className="w-full text-lg py-6 bg-accent text-accent-foreground hover:bg-accent/90 transform hover:scale-105 transition-all duration-300">
-                            {isLoading ? (
-                                <>
-                                    <LoaderCircle className="mr-2 h-5 w-5 animate-spin" />
-                                    Fetching Prices...
-                                </>
-                            ) : (
-                                "Get Prices ⚡️"
-                            )}
-                        </Button>
+                    <CardContent>
+                        <div className="space-y-6">
+                            <Select onValueChange={setSelectedCrop} value={selectedCrop}>
+                                <SelectTrigger className="w-full text-lg py-6 bg-background/50">
+                                    <SelectValue placeholder="Select a crop..." />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {availableCrops.map(crop => (
+                                        <SelectItem key={crop} value={crop} className="text-lg">{crop}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            <Button onClick={handleFetchPrices} disabled={isLoading || !selectedCrop} className="w-full text-lg py-6 bg-accent text-accent-foreground hover:bg-accent/90">
+                                {isLoading ? (
+                                    <>
+                                        <LoaderCircle className="mr-2 h-5 w-5 animate-spin" />
+                                        Fetching Prices...
+                                    </>
+                                ) : (
+                                    "Get Prices ⚡️"
+                                )}
+                            </Button>
+                        </div>
                     </CardContent>
                 </Card>
 
@@ -109,7 +111,7 @@ export default function PricesPage() {
                                     Today's {result.commodity} Price Summary
                                 </CardTitle>
                             </CardHeader>
-                            <CardContent className="space-y-4 text-lg p-6">
+                            <CardContent className="space-y-4 text-lg">
                                 <div className="flex items-center gap-4 p-3 rounded-lg bg-background/50">
                                     <DollarSign className="w-6 h-6 text-accent"/>
                                     <div>

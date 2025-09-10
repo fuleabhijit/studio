@@ -4,7 +4,7 @@
 import 'regenerator-runtime/runtime';
 import { useState, useRef, type ChangeEvent, useEffect } from 'react';
 import Image from 'next/image';
-import { Camera, LoaderCircle, AlertTriangle, HeartPulse, FlaskConical, Volume2, Mic, Flower2, Share2, Save, ShoppingCart, TrendingUp, Sparkles, X, RotateCcw, UserSquare } from 'lucide-react';
+import { Camera, LoaderCircle, AlertTriangle, HeartPulse, FlaskConical, Volume2, Mic, Flower2, Share2, UserSquare, ShoppingCart, TrendingUp, Sparkles, X, RotateCcw } from 'lucide-react';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 import { useRouter } from 'next/navigation';
 
@@ -276,7 +276,7 @@ export default function DiagnosisTool() {
         <div className="grid lg:grid-cols-2 gap-8">
             <div className="space-y-8">
                 <Card className="glass-card">
-                    <CardHeader className="flex-row items-start justify-between gap-4 space-y-0 p-6">
+                    <CardHeader className="flex-row items-start justify-between gap-4 space-y-0">
                         <div className="flex items-center gap-4">
                             <HeartPulse className="w-8 h-8 text-primary flex-shrink-0" />
                             <CardTitle className="text-2xl">{t('diagnosisTitle')}</CardTitle>
@@ -292,7 +292,7 @@ export default function DiagnosisTool() {
                             </Button>
                         </div>
                     </CardHeader>
-                    <CardContent className="p-6 pt-0">
+                    <CardContent>
                         <p className="text-xl font-semibold">{diagnosis.diseaseIdentification.diseaseName}</p>
                         <Badge variant={diagnosis.diseaseIdentification.diseaseDetected ? "destructive" : "success"} className="mt-2 text-sm">
                            {diagnosis.diseaseIdentification.diseaseDetected ? t('diseaseDetectedBadge') : t('noDiseaseDetectedBadge')}
@@ -302,7 +302,7 @@ export default function DiagnosisTool() {
 
                 {diagnosis.remedySuggestions && diagnosis.remedySuggestions.length > 0 && (
                     <Card className="glass-card">
-                        <CardHeader className="flex-row items-start justify-between gap-4 space-y-0 p-6">
+                        <CardHeader className="flex-row items-start justify-between gap-4 space-y-0">
                            <div className="flex items-center gap-4">
                              <FlaskConical className="w-8 h-8 text-accent flex-shrink-0" />
                              <CardTitle className="text-2xl">{t('remedyRecommendationsTitle')}</CardTitle>
@@ -311,7 +311,7 @@ export default function DiagnosisTool() {
                              {ttsLoading === 'remedies' ? <LoaderCircle className="w-5 h-5 animate-spin" /> : <Volume2 className="w-5 h-5" />}
                            </Button>
                         </CardHeader>
-                        <CardContent className="space-y-4 p-6 pt-0">
+                        <CardContent className="space-y-4">
                             {diagnosis.remedySuggestions.map((remedy, index) => (
                                 <div key={index} className="p-4 rounded-lg bg-background/50">
                                     <div className="flex justify-between items-start">
@@ -328,11 +328,11 @@ export default function DiagnosisTool() {
             <div className="space-y-8">
                 {marketAnalysis && (
                     <Card className="glass-card">
-                         <CardHeader className="flex-row items-center gap-4 space-y-0 p-6">
+                         <CardHeader className="flex-row items-center gap-4 space-y-0">
                             <TrendingUp className="w-8 h-8 text-primary" />
                             <CardTitle className="text-2xl">{marketAnalysis.commodity} Market Intel</CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-3 p-6 pt-0">
+                        <CardContent className="space-y-3">
                             <div className="flex items-center gap-3"><ShoppingCart className="w-5 h-5 text-accent"/> <p>Range: {marketAnalysis.priceRange} INR/quintal</p></div>
                             <div className="flex items-center gap-3"><TrendingUp className="w-5 h-5 text-accent"/> <p>Trend: {marketAnalysis.trend}</p></div>
                             <div className="flex items-center gap-3"><Sparkles className="w-5 h-5 text-accent"/> <p>Advice: <strong>{marketAnalysis.advice}</strong> - {marketAnalysis.reason}</p></div>
@@ -372,7 +372,7 @@ export default function DiagnosisTool() {
   return (
     <div className="relative pb-24">
       <Card className="max-w-4xl mx-auto mb-12 glass-card">
-        <CardContent className="p-6">
+        <CardContent>
             <div
                 className="relative w-full h-64 flex-shrink-0 border-2 border-dashed border-border/50 rounded-2xl flex items-center justify-center cursor-pointer hover:border-primary hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-300"
                 onClick={triggerFileSelect}
@@ -457,5 +457,3 @@ export default function DiagnosisTool() {
     </div>
   );
 }
-
-    

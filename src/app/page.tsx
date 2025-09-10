@@ -6,7 +6,7 @@ import Footer from '@/components/agrimedic/Footer';
 import DiagnosisTool from '@/components/agrimedic/DiagnosisTool';
 import { useLanguage } from '@/context/LanguageContext';
 import { Button } from '@/components/ui/button';
-import { ArrowDown, Leaf, LineChart, MessagesSquare, Users,ChevronDown } from 'lucide-react';
+import { ArrowDown, Leaf, LineChart, MessagesSquare } from 'lucide-react';
 import {
   Accordion,
   AccordionContent,
@@ -189,5 +189,3 @@ export default function Home() {
     </div>
   );
 }
-
-    

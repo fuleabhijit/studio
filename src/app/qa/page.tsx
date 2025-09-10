@@ -71,7 +71,7 @@ export default function QAPage() {
                         </CardTitle>
                         <CardDescription>Describe your problem or question in detail below. The more detail, the better the answer!</CardDescription>
                     </CardHeader>
-                    <CardContent className="p-6">
+                    <CardContent>
                         <Form {...form}>
                             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                                 <FormField
@@ -92,7 +92,7 @@ export default function QAPage() {
                                         </FormItem>
                                     )}
                                 />
-                                <Button type="submit" disabled={isLoading} className="w-full text-lg py-6 bg-accent text-accent-foreground hover:bg-accent/90 transform hover:scale-105 transition-all duration-300">
+                                <Button type="submit" disabled={isLoading} className="w-full text-lg py-6 bg-accent text-accent-foreground hover:bg-accent/90">
                                     {isLoading ? (
                                         <>
                                             <LoaderCircle className="mr-2 h-5 w-5 animate-spin" />
@@ -123,8 +123,8 @@ export default function QAPage() {
                                     AI Generated Answer
                                 </CardTitle>
                             </CardHeader>
-                            <CardContent className="space-y-4 text-lg p-6">
-                               <p className="whitespace-pre-wrap leading-relaxed">{result.answer}</p>
+                            <CardContent>
+                               <p className="whitespace-pre-wrap leading-relaxed text-lg">{result.answer}</p>
                             </CardContent>
                         </Card>
                     )}
