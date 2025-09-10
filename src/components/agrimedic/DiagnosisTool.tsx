@@ -443,6 +443,7 @@ export default function DiagnosisTool() {
                   <p className="text-sm border-t pt-4 mt-4 whitespace-pre-wrap">{escalationDetails?.escalationMessage}</p>
               </div>
               <AlertDialogFooter>
+                   <AlertDialogCancel>Cancel</AlertDialogCancel>
                   <AlertDialogAction onClick={() => {
                       navigator.clipboard.writeText(escalationDetails?.escalationMessage || '');
                       toast({ title: 'Message Copied!'});
@@ -456,3 +457,5 @@ export default function DiagnosisTool() {
     </div>
   );
 }
+
+    
