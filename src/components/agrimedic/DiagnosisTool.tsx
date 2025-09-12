@@ -400,7 +400,7 @@ export default function DiagnosisTool() {
   return (
     <div className="relative pb-24">
       <Card className="max-w-4xl mx-auto mb-12 glass-card">
-        <CardContent>
+        <CardContent className="p-4">
             <div
                 className="relative w-full h-64 flex-shrink-0 border-2 border-dashed border-border/50 rounded-2xl flex items-center justify-center cursor-pointer hover:border-primary hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-300"
                 onClick={triggerFileSelect}
